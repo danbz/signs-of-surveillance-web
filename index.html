@@ -52,6 +52,7 @@
 
 <body>
   <h1 id='hero-title'>Signs of Surveillance</h1>
+  <p id ='image-box'></p>
   <p>Upload a local file to read Exif data.
     <br /> <input id="file-input" type="file" />
   </p>
@@ -62,15 +63,13 @@
     var mySigns = [];
     var mymap = L.map('mapid').setView([51.505, -0.09], 13); // LONDON
     //var mymap = L.map('mapid').setView([52.379, 4.899], 13); // AMSTERDAM
-
-    // 52.379189, 4.899431
     //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ";
 
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
       maxZoom: 20,
       //id: 'mapbox.streets',
-      id: 'mapbox.dark',
+      //id: 'mapbox.dark',
       id: 'mapbox.light',
       //id: 'mapbox.outdoors',
       //id: 'mapbox.satellite',
@@ -78,93 +77,49 @@
       accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
     }).addTo(mymap);
 
-
-    // var circle = L.circle([51.508, -0.11], {
-    //   color: 'red',
-    //   fillColor: '#f03',
-    //   fillOpacity: 0.5,
-    //   radius: 500
-    // }).addTo(mymap);
-
-    // var polygon = L.polygon([
-    //   [51.509, -0.08],
-    //   [51.503, -0.06],
-    //   [51.51, -0.047]
-    // ]).addTo(mymap);
-
-
-    //POPUPS STANDALONE
-    // var popup = L.popup();
-
-    // function onMapClick(e) {
-    //   popup
-    //     .setLatLng(e.latlng)
-    //     .setContent("You clicked the map at " + e.latlng.toString())
-    //     .openOn(mymap);
-    // }
-
-    //mymap.on('click', onMapClick);
     function addSigns() {
       var iconLat = 51.505;
       var iconLong = -0.09;
       var maxSigns = 5;
-
       // to setup signs as custom icons
       for (i = 1; i < maxSigns + 1; i++) {
-        ///////// adding signs using icon functionality /////////
-        // var myIcon = L.icon({
-        //   iconUrl: 'signs/sign' + i + '.jpg',
-        //   iconSize: [75, 100],
-        //   iconAnchor: [22, 94],
-        //   popupAnchor: [-3, -76],
-        //   // shadowUrl: 'my-icon-shadow.png',
-        //   // shadowSize: [68, 95],
-        //   // shadowAnchor: [22, 94]
-        // });
-        // var newSign = L.marker([iconLat, iconLong + (i / 100.0)], {
-        //   icon: myIcon
-        // }).addTo(mymap);
-        // newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p>EXIF data <p> <img src ='signs/sign" + i + ".jpg'></div>");
-        /////////        /////////
         var imagePath = "signs/sign" + i + ".jpg";
-
-        var img = new Image();
-        img.onload = function () {
-           console.log("image " + img.src + " is loaded");
-           // load exif data from loaded images in dom
-           var img5 = document.getElementById("sign5");
-           console.log("image5 " + img5);
-           EXIF.getData(img5, function() {
-             console.console.log("getdata function");
-             var make = EXIF.getTag(this, "Make");
-             var model = EXIF.getTag(this, "Model");
-             //var makeAndModel = document.getElementById("sign"+ i);
-             //makeAndModel.innerHTML = `${make} ${model}`;
-             console.log("make & model " + make, model);
-           });
-        }
-        img.src = imagePath;
-        ///////// adding signs using markers /////////
-
         console.log(imagePath);
-        var newSign = L.marker([iconLat, iconLong + (i / 100.0)], riseOnHover = true).addTo(mymap);
-        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  >EXIF data <br> <p> <img id='sign" + i + "'src =" + imagePath + "></div>").openPopup();
-
-
-
-        /////////     /////////
+        ///////// adding signs using markers /////////
+        var newSign = L.marker([iconLat, iconLong + (i / 100.0)], riseOnHover = true, autoclose = false).addTo(mymap);
+        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>EXIF data <p> <img id='sign" + i + "'src =" + imagePath + "></div>").openPopup();
+        // insert images into page
+        var insertSign = document.createElement('img');
+        insertSign.setAttribute('src', imagePath);
+        insertSign.setAttribute('width', '20px');
+        insertSign.setAttribute('id', 'image' +i);
+        var parent = document.getElementById('image-box');
+        parent.insertBefore(insertSign, parent.firstChild);
+        /////
+        var img = new Image();
+        img.onload = getExifData(i);
+        img.src = imagePath;
         mySigns.push(newSign);
       }
+      document.getElementById("signEXIF1").innerHTML = "new message";
+    }
+
+    function getExifData(i) {
+      // load exif data from loaded images in dom
+      var img = document.getElementById("image" + i);
+      console.log("exifData function loaded image" + i + " : " + img);
+      document.getElementById("signEXIF" + i).innerHTML = "new EXIf data";
+      EXIF.getData(img, function() {
+        console.log("getdata function");
+        var make = EXIF.getTag(this, "Make");
+        var model = EXIF.getTag(this, "Model");
+        document.getElementById("signEXIF" + i).innerHTML = "new EXIf data";
+        // makeAndModel.innerHTML = `${make} ${model}`;
+        console.log("make & model " + make, model);
+      });
     }
 
     addSigns();
-    // BIND POPUPS
-
-    // var marker = L.marker([51.5, -0.09],riseOnHover=true).addTo(mymap);
-    // marker.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p>EXIF data <p> <img src ='signs/sign1.jpg'></div>").openPopup();
-    // circle.bindPopup("I am a circle.");
-    // polygon.bindPopup("I am a polygon.");
-    //sign2.bindPopup("I am a sign of surveillance.").openPopup();
   </script>
 
 
@@ -188,18 +143,6 @@
         });
       }
     }
-
-
-
-
-    document.getElementById("sign1").onclick = function() {
-            EXIF.getData(this, function() {
-                var make = EXIF.getTag(this, "Make"),
-                    model = EXIF.getTag(this, "Model");
-                alert("I was taken by a " + make + " " + model);
-            });
-        }
-
   </script>
 </body>
 
