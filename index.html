@@ -7,6 +7,9 @@
 
   <!-- Make sure you put this AFTER Leaflet's CSS -->
   <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
+<!-- load EXIF.js -->
+  <script src="js/exif.js"></script>
+
   <style>
     /* typography and generic styling */
     h1#hero-title {
@@ -49,6 +52,9 @@
 
 <body>
   <h1 id='hero-title'>Signs of Surveillance</h1>
+  <p>Upload a local file to read Exif data.
+    <br />  <input id="file-input" type="file" />
+  </p>
 
   <div id="mapid"></div>
 
@@ -88,7 +94,7 @@
 
 
     //POPUPS STANDALONE
-    var popup = L.popup();
+    // var popup = L.popup();
 
     // function onMapClick(e) {
     //   popup
@@ -103,7 +109,7 @@
       var iconLong = -0.09;
       var maxSigns = 5;
 
-// to setup signs as custom icons
+      // to setup signs as custom icons
       for (i = 1; i < maxSigns + 1; i++) {
         ///////// adding signs using icon functionality /////////
         // var myIcon = L.icon({
@@ -122,7 +128,7 @@
         /////////        /////////
 
         ///////// adding signs using markers /////////
-        var newSign = L.marker([iconLat, iconLong + (i / 100.0)],riseOnHover=true).addTo(mymap);
+        var newSign = L.marker([iconLat, iconLong + (i / 100.0)], riseOnHover = true).addTo(mymap);
         newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp" + i + "</h1><p>EXIF data <p> <img src ='signs/sign" + i + ".jpg'></div>").openPopup();
 
         /////////     /////////
@@ -138,6 +144,25 @@
     // circle.bindPopup("I am a circle.");
     // polygon.bindPopup("I am a polygon.");
     //sign2.bindPopup("I am a sign of surveillance.").openPopup();
+  </script>
+
+
+  <script>
+
+  // exif js loading
+    document.getElementById("file-input").onchange = function(e) {
+      var file = e.target.files[0]
+      if (file && file.name) {
+        EXIF.getData(file, function() {
+          var exifData = EXIF.pretty(this);
+          if (exifData) {
+            alert(exifData);
+          } else {
+            alert("No EXIF data found in image '" + file.name + "'.");
+          }
+        });
+      }
+    }
   </script>
 </body>
 

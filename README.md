@@ -5,7 +5,9 @@ http://signsofsurveillance.com
 
 http://buzzo.com
 
-using leaflet.js library for mapping elements
+dependencies
+
+ * leaflet.js library for mapping elements https://leafletjs.com
+ * exif.js for EXIF data extraction https://github.com/exif-js/exif-js
 
 ![screenshot](screenshot.png)
-
