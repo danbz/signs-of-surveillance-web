@@ -7,5 +7,5 @@ http://buzzo.com
 
 using leaflet.js library for mapping elements
 
-
+![screenshot](screenshot.png)
 
