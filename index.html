@@ -72,6 +72,7 @@
         var model = EXIF.getTag(this, "Model");
         var iconLat = EXIF.getTag(this, "GPSLatitude");
         var iconLong = EXIF.getTag(this, "GPSLongitude");
+        var dateTime = EXIF.getTag(this, "DateTime");
         // here we convert EXIF lat long degrees to decimal degrees
         var decLat = iconLat[0] + iconLat[1] / 60 + iconLat[2] / 3600;
         var decLong = iconLong[0] + iconLong[1] / 60 + iconLong[2] / 3600;
@@ -81,7 +82,8 @@
         var newLatLng = L.latLng(decLat, decLong);
         var imagePath = "signs/sign" + i + ".jpg";
         mySigns[i].setLatLng(newLatLng);
-        mySigns[i].popup().setContent("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>" + make + " <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
+        mySigns[i].bindPopup("<div class ='sign_popup'><h1>"+ dateTime +"</h1><p  id ='signEXIF" + i + "'>" + make + "<br>" + model + "<br>" + dateTime + "<p> <img id='sign" + i + "'src =" + imagePath + "></div>");
+        //mySigns[i].popup().setContent("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>" + make + " <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
         // makeAndModel.innerHTML = `${make} ${model}`;
       });
     }
@@ -107,12 +109,12 @@
     function addSigns() {
       var iconLat = 51.505; // start with some location near london
       var iconLong = -0.09;
-      var maxSigns = 5;
+      var maxSigns = 23;
       for (i = 0; i < maxSigns; i++) {
         var imagePath = "signs/sign" + i + ".jpg";
         ///////// adding signs using markers /////////
         var newSign = L.marker([iconLat, iconLong + (i / 100.0)], riseOnHover = true, autoclose = false).addTo(mymap);
-        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>EXIF data <p> <img id='sign" + i + "'src =" + imagePath + "></div>").openPopup();
+        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>EXIF data <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
         // insert images into page under the title
         var insertSign = document.createElement('img');
         insertSign.setAttribute('src', imagePath);
