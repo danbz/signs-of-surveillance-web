@@ -10,14 +10,17 @@
   <!-- load EXIF.js -->
   <script src="js/exif.js"></script>
   <!--script src= './js/geodesy-2.0.0/dms.js'></script-->
-  <script type="module">
+  <!-- <script type="module">
     import Dms from './js/geodesy-2.0.0/dms.js';
 
     new Dms();
     const lat = Dms.parse('51° 28′ 40.37″ N');
     console.log("Dms lat: " + lat);
       // DD = d + (min/60) + (sec/3600)
-  </script>
+      // GeoLocation.LatComponents.degrees +
+      // this->GeoLocation.LatComponents.minutes / 60 +
+      // this->GeoLocation.LatComponents.seconds / 3600;
+  </script> -->
   <style>
     /* typography and generic styling */
     h1#hero-title {
@@ -69,14 +72,13 @@
         var model = EXIF.getTag(this, "Model");
         var iconLat = EXIF.getTag(this, "GPSLatitude");
         var iconLong = EXIF.getTag(this, "GPSLongitude");
-        // const latDeg = convertDegtoDecDeg(iconLat);
-        // const longDeg = convertDegtoDecDeg(iconLat);
-        // const lat = convertDegtoDecDeg('51° 28′ 40.37″ N');
-        // lat = Dms.parse('51° 28′ 40.37″ N');
-        console.log("lat " + iconLat + "  long " + iconLong);
+        // here we convert EXIF lat long degrees to decimal degrees
+        var decLat = iconLat[0] + iconLat[1] / 60 + iconLat[2] / 3600;
+        var decLong = iconLong[0] + iconLong[1] / 60 + iconLong[2] / 3600;
+        console.log("lat " + decLat + "  long " + decLong);
         console.log("make & model " + make, model);
-        // need to convert EXIF lat long degrees to decimal degrees
-        var newLatLng = L.latLng(iconLat, iconLong);
+
+        var newLatLng = L.latLng(decLat, decLong);
         var imagePath = "signs/sign" + i + ".jpg";
         mySigns[i].setLatLng(newLatLng);
         mySigns[i].popup().setContent("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>" + make + " <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
@@ -149,4 +151,5 @@
     }
   </script>
 </body>
+
 </html>
