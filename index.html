@@ -7,7 +7,7 @@
 
   <!-- Make sure you put this AFTER Leaflet's CSS -->
   <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
-<!-- load EXIF.js -->
+  <!-- load EXIF.js -->
   <script src="js/exif.js"></script>
 
   <style>
@@ -21,10 +21,10 @@
 
     /* mapstyling */
 
-    .leaflet-top {
+    /* .leaflet-top {
       top: 40px;
       content
-    }
+    } */
 
     /* .leaflet-top::before {
       content: "signs of surveillance: ";
@@ -53,7 +53,7 @@
 <body>
   <h1 id='hero-title'>Signs of Surveillance</h1>
   <p>Upload a local file to read Exif data.
-    <br />  <input id="file-input" type="file" />
+    <br /> <input id="file-input" type="file" />
   </p>
 
   <div id="mapid"></div>
@@ -126,10 +126,31 @@
         // }).addTo(mymap);
         // newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p>EXIF data <p> <img src ='signs/sign" + i + ".jpg'></div>");
         /////////        /////////
+        var imagePath = "signs/sign" + i + ".jpg";
 
+        var img = new Image();
+        img.onload = function () {
+           console.log("image " + img.src + " is loaded");
+           // load exif data from loaded images in dom
+           var img5 = document.getElementById("sign5");
+           console.log("image5 " + img5);
+           EXIF.getData(img5, function() {
+             console.console.log("getdata function");
+             var make = EXIF.getTag(this, "Make");
+             var model = EXIF.getTag(this, "Model");
+             //var makeAndModel = document.getElementById("sign"+ i);
+             //makeAndModel.innerHTML = `${make} ${model}`;
+             console.log("make & model " + make, model);
+           });
+        }
+        img.src = imagePath;
         ///////// adding signs using markers /////////
+
+        console.log(imagePath);
         var newSign = L.marker([iconLat, iconLong + (i / 100.0)], riseOnHover = true).addTo(mymap);
-        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp" + i + "</h1><p>EXIF data <p> <img src ='signs/sign" + i + ".jpg'></div>").openPopup();
+        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  >EXIF data <br> <p> <img id='sign" + i + "'src =" + imagePath + "></div>").openPopup();
+
+
 
         /////////     /////////
         mySigns.push(newSign);
@@ -148,14 +169,18 @@
 
 
   <script>
-
-  // exif js loading
+    // exif js loading
     document.getElementById("file-input").onchange = function(e) {
       var file = e.target.files[0]
+      // console.log(e.target.files[0]);
       if (file && file.name) {
         EXIF.getData(file, function() {
           var exifData = EXIF.pretty(this);
           if (exifData) {
+            console.log(exifData);
+            var make = EXIF.getTag(this, "Make");
+            var model = EXIF.getTag(this, "Model");
+            console.log("make and model " + make + model);
             alert(exifData);
           } else {
             alert("No EXIF data found in image '" + file.name + "'.");
@@ -163,6 +188,18 @@
         });
       }
     }
+
+
+
+
+    document.getElementById("sign1").onclick = function() {
+            EXIF.getData(this, function() {
+                var make = EXIF.getTag(this, "Make"),
+                    model = EXIF.getTag(this, "Model");
+                alert("I was taken by a " + make + " " + model);
+            });
+        }
+
   </script>
 </body>
 
