@@ -1,0 +1,15 @@
+language: node_js
+
+node_js:
+- "lts/*"
+- "node"
+- "8"
+
+os:
+- linux
+- osx
+- windows
+
+after_success:
+- nyc npm test # 1st run fails, so force report by running nyc twice; github.com/istanbuljs/nyc/issues/993
+- nyc npm test && nyc report --reporter=text-lcov | coveralls
