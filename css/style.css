@@ -1,0 +1,25 @@
+h1#hero-title {
+  font-family: sans-serif;
+  /* margin-bottom: -20px;
+  z-index: 1000; */
+  padding: 0;
+}
+
+/* mapstyling */
+#mapid {
+  height: 680px;
+}
+
+/* sign styling */
+.sign_popup h1 {
+  font-size: 90%;
+}
+
+.sign_popup p {
+  font-size: 90%;
+}
+
+.sign_popup img {
+  width: 200px;
+  border: 1px solid grey;
+}
