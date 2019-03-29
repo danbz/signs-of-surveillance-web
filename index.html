@@ -21,7 +21,7 @@
       // this->GeoLocation.LatComponents.minutes / 60 +
       // this->GeoLocation.LatComponents.seconds / 3600;
   </script> -->
-  <link rel="stylesheet" type="text/css" href="css/style.css" >
+  <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
@@ -55,7 +55,7 @@
         var newLatLng = L.latLng(decLat, decLong);
         var imagePath = "signs/sign" + i + ".jpg";
         mySigns[i].setLatLng(newLatLng);
-        mySigns[i].bindPopup("<div class ='sign_popup'><h1>"+ dateTime +"</h1><p  id ='signEXIF" + i + "'>" + make + "<br>" + model + "<br>" + dateTime + "<p> <img id='sign" + i + "'src =" + imagePath + "></div>");
+        mySigns[i].bindPopup("<div class ='sign_popup'><h1>" + dateTime + "</h1><p  id ='signEXIF" + i + "'>" + make + "<br>" + model + "<br>" + dateTime + "<p> <img id='sign" + i + "'src =" + imagePath + "></div>");
         //mySigns[i].popup().setContent("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>" + make + " <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
         // makeAndModel.innerHTML = `${make} ${model}`;
       });
@@ -106,24 +106,83 @@
   </script>
 
   <script>
-    // exif js loading
+    // exif js loading of external images
     document.getElementById("file-input").onchange = function(e) {
       var file = e.target.files[0]
       if (file && file.name) {
         EXIF.getData(file, function() {
           var exifData = EXIF.pretty(this);
           if (exifData) {
-            console.log(exifData);
-            var make = EXIF.getTag(this, "Make");
-            var model = EXIF.getTag(this, "Model");
-            console.log("make and model " + make + model);
+            // console.log(exifData);
+            // var Make = { Make : EXIF.getTag(this, "Make") };
+            // var Model = { Model : EXIF.getTag(this, "Model" ) };
+            // var Orientation = { Orientation : EXIF.getTag(this, "Orientation") };
+            // var XResolution = { XResolution : EXIF.getTag(this, "XResolution") };
+            // var YResolution = { YResolution : EXIF.getTag(this, "YResolution") };
+            // var ResolutionUnit = { ResolutionUnit : EXIF.getTag(this, "ResolutionUnit") };
+            // var Software = { Software : EXIF.getTag(this, "Software") };
+            // var DateTime = { DateTime : EXIF.getTag(this, "DateTime") };
+            // var ExifIFDPointer = { ExifIFDPointer : EXIF.getTag(this, "ExifIFDPointer") };
+            // var GPSInfoIFDPointer = { GPSInfoIFDPointer : EXIF.getTag(this, "GPSInfoIFDPointer") };
+            // var ExposureTime = { ExposureTime : EXIF.getTag(this, "ExposureTime") };
+            // var FNumber = { FNumber : EXIF.getTag(this, "FNumber") };
+            // var ExposureProgram = { ExposureProgram : EXIF.getTag(this, "ExposureProgram") };
+            // var ISOSpeedRatings = { ISOSpeedRatings : EXIF.getTag(this, "ISOSpeedRatings") };
+            // var ExifVersion = { ExifVersion : EXIF.getTag(this, "ExifVersion") };
+            // var DateTimeOriginal = EXIF.getTag(this, "DateTimeOriginal");
+            // var DateTimeDigitized = EXIF.getTag(this, "DateTimeDigitized");
+            // var ComponentsConfiguration = EXIF.getTag(this, "ComponentsConfiguration");
+            // var ShutterSpeedValue = EXIF.getTag(this, "ShutterSpeedValue");
+            // var ApertureValue = EXIF.getTag(this, "ApertureValue");
+            // var ExposureBias = EXIF.getTag(this, "ExposureBias");
+            // var MeteringMode = EXIF.getTag(this, "MeteringMode");
+            // var Flash = EXIF.getTag(this, "Flash");
+            // var FocalLength = EXIF.getTag(this, "FocalLength");
+            // var SubjectArea = EXIF.getTag(this, "SubjectArea");
+            // var MakerNote = EXIF.getTag(this, "MakerNote");
+            // var SubsecTimeOriginal = EXIF.getTag(this, "SubsecTimeOriginal");
+            // var SubsecTimeDigitized = EXIF.getTag(this, "SubsecTimeDigitized");
+            // var FlashpixVersion = EXIF.getTag(this, "FlashpixVersion");
+            // var PixelXDimension = EXIF.getTag(this, "PixelXDimension");
+            // var PixelYDimension = EXIF.getTag(this, "PixelYDimension");
+            // var SensingMethod = EXIF.getTag(this, "SensingMethod");
+            // var SceneType = EXIF.getTag(this, "SceneType");
+            // var ExposureMode = EXIF.getTag(this, "ExposureMode");
+            // var WhiteBalance = EXIF.getTag(this, "WhiteBalance");
+            // var FocalLengthIn35mmFilm = EXIF.getTag(this, "FocalLengthIn35mmFilm");
+            // var SceneCaptureType = EXIF.getTag(this, "SceneCaptureType");
+            // var GPSLatitudeRef = EXIF.getTag(this, "GPSLatitudeRef");
+            // var GPSLatitude = EXIF.getTag(this, "GPSLatitude");
+            // var GPSLongitudeRef = EXIF.getTag(this, "GPSLongitudeRef");
+            // var GPSLongitude = EXIF.getTag(this, "GPSLongitude");
+            // var GPSAltitudeRef = EXIF.getTag(this, "GPSAltitudeRef");
+            // var GPSAltitude = EXIF.getTag(this, "GPSAltitude");
+            // var GPSTimeStamp = EXIF.getTag(this, "GPSTimeStamp");
+            // var GPSSpeedRef = EXIF.getTag(this, "GPSSpeedRef");
+            // var GPSSpeed = EXIF.getTag(this, "GPSSpeed");
+            // var GPSImgDirectionRef = EXIF.getTag(this, "GPSImgDirectionRef");
+            // var GPSImgDirection = EXIF.getTag(this, "GPSImgDirection");
+            // var GPSDestBearingRef = EXIF.getTag(this, "GPSDestBearingRef");
+            // var GPSDestBearing = EXIF.getTag(this, "GPSDestBearing");
+            // var GPSDestBearing = EXIF.getTag(this, "GPSDestBearing");
+            // var GPSDateStamp = EXIF.getTag(this, "GPSDateStamp");
+            // var thumbnail = EXIF.getTag(this, "thumbnail");
+             var FileName = { FileName : file.name };
+             var myJSON = Object.assign( {}, FileName, file); // concatenate objects into new json object
+
+            // console.log("make and model " + make + model);
             alert(exifData);
+
+            var myJSONImage = JSON.stringify(myJSON);
+            console.log(myJSONImage);
+
           } else {
             alert("No EXIF data found in image '" + file.name + "'.");
           }
         });
       }
     }
+
   </script>
 </body>
 
