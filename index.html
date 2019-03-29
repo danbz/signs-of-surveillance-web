@@ -7,63 +7,25 @@
 
   <!-- Make sure you put this AFTER Leaflet's CSS -->
   <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
-  <!-- load EXIF.js -->
-  <script src="js/exif.js"></script>
-  <!--script src= './js/geodesy-2.0.0/dms.js'></script-->
-  <!-- <script type="module">
-    import Dms from './js/geodesy-2.0.0/dms.js';
-
-    new Dms();
-    const lat = Dms.parse('51° 28′ 40.37″ N');
-    console.log("Dms lat: " + lat);
-      // DD = d + (min/60) + (sec/3600)
-      // GeoLocation.LatComponents.degrees +
-      // this->GeoLocation.LatComponents.minutes / 60 +
-      // this->GeoLocation.LatComponents.seconds / 3600;
-  </script> -->
+  <!-- load piEXIF.js -->
+  <script src="js/piexif.js"></script>
   <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
   <h1 id='hero-title'>Signs of Surveillance</h1>
-  <p id='image-box'></p>
-  <p>Upload a local file to read Exif data.
-    <br /> <input id="file-input" type="file" />
-  </p>
+  <!--p>test piExif routine.
+    <br /> <input id="piexif-file-input" type="file" />
+  </p-->
 
   <div id="mapid"></div>
 
   <script>
-    // load exif data from loaded images in dom
-    function getExifData(i) {
-      var iconLat = 51.505; // some sample location values near london
-      var iconLong = -0.09;
-      var img = document.getElementById("image" + i);
-      console.log("exifData function loaded image" + i + " : " + img);
-      EXIF.getData(img, function() {
-        var make = EXIF.getTag(this, "Make");
-        var model = EXIF.getTag(this, "Model");
-        var iconLat = EXIF.getTag(this, "GPSLatitude");
-        var iconLong = EXIF.getTag(this, "GPSLongitude");
-        var dateTime = EXIF.getTag(this, "DateTime");
-        // here we convert EXIF lat long degrees to decimal degrees
-        var decLat = iconLat[0] + iconLat[1] / 60 + iconLat[2] / 3600;
-        var decLong = iconLong[0] + iconLong[1] / 60 + iconLong[2] / 3600;
-        console.log("lat " + decLat + "  long " + decLong);
-        console.log("make & model " + make, model);
-
-        var newLatLng = L.latLng(decLat, decLong);
-        var imagePath = "signs/sign" + i + ".jpg";
-        mySigns[i].setLatLng(newLatLng);
-        mySigns[i].bindPopup("<div class ='sign_popup'><h1>" + dateTime + "</h1><p  id ='signEXIF" + i + "'>" + make + "<br>" + model + "<br>" + dateTime + "<p> <img id='sign" + i + "'src =" + imagePath + "></div>");
-        //mySigns[i].popup().setContent("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>" + make + " <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
-        // makeAndModel.innerHTML = `${make} ${model}`;
-      });
-    }
-  </script>
-
-  <script>
+    window.onload = function() {
+      addSigns()
+    };
     var mySigns = [];
+    var myExif = [];
     var mymap = L.map('mapid').setView([51.505, -0.09], 13); // LONDON
     //var mymap = L.map('mapid').setView([52.379, 4.899], 13); // AMSTERDAM
     //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ";
@@ -80,54 +42,123 @@
 
     // to setup signs as custom icons in an array of markers
     function addSigns() {
-      var iconLat = 51.505; // start with some location near london
-      var iconLong = -0.09;
-      var maxSigns = 23;
+      var maxSigns = 20;
       for (i = 0; i < maxSigns; i++) {
-        var imagePath = "signs/sign" + i + ".jpg";
-        ///////// adding signs using markers /////////
-        var newSign = L.marker([iconLat, iconLong + (i / 100.0)], riseOnHover = true, autoclose = false).addTo(mymap);
-        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>EXIF data <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
-        // insert images into page under the title
-        var insertSign = document.createElement('img');
-        insertSign.setAttribute('src', imagePath);
-        insertSign.setAttribute('width', '20px');
-        insertSign.setAttribute('id', 'image' + i);
-        var parent = document.getElementById('image-box');
-        parent.insertBefore(insertSign, parent.firstChild);
+        var imagePath = "./signs/sign" + i + ".jpg";
+        convertFileToBase64viaFileReader(imagePath);
+        /////// adding signs using markers /////////
+        // var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg( myExif[i].GPSLatitude, myExif[i].GPSLatitudeRef ), piexif.GPSHelper.dmsRationalToDeg(myExif[i].GPSLongtitude, myExif[i].GPSLongtitudeRef ) ], riseOnHover = true, autoclose = false).addTo(mymap);
+        // newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>EXIF data <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
 
-        var img = new Image();
-        img.onload = getExifData(i);
-        img.src = imagePath;
-        mySigns.push(newSign); // push into array of markers on the map
       }
     }
-    addSigns();
   </script>
 
   <script>
-    // exif js loading of external images
-    document.getElementById("file-input").onchange = function(e) {
-      var file = e.target.files[0]
-      if (file && file.name) {
-        EXIF.getData(file, function() {
-          var exifData = EXIF.pretty(this);
-          if (exifData) {
-            var FileName = {
-              FileName: file.name
-            };
-            var myJSON = Object.assign({}, FileName, file); // concatenate file name and EXIF data into new json object
-            alert(myJSON);
-            var myJSONImage = JSON.stringify(myJSON);
-            console.log(myJSONImage);
+    //piexif load test
+    function printExif(dataURL) {
+      var originalImg = new Image();
+      originalImg.src = dataURL;
+      var exif = piexif.load(dataURL);
+      originalImg.onload = function() {
+        var w = originalImg.width;
+        var h = originalImg.height;
+        mySigns.push(originalImg);
+        console.log("push" + originalImg);
 
-          } else {
-            alert("No EXIF data found in image '" + file.name + "'.");
-          }
-        });
+        myExif.push(exif); // push exif data into array of exif data
+        // console.log("push" + exif);
+        // console.log( "orientation " + exif["0th"][piexif.ImageIFD.Orientation] ) ;
+        // console.log( "GPSLatitude " + exif["GPS"][piexif.GPSIFD.GPSLatitude] ) ;
+
+        var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
+          exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = false).addTo(mymap);
+
+        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + "'>EXIF data <p> <img id='sign'src =" + originalImg.source + "></div>");
       }
     }
+
+    function handleFileSelect(evt) {
+      // var file = evt.target.files[0];
+      // var reader = new FileReader();
+      // reader.onloadend = function(e) {
+      //   printExif(e.target.result);
+      // };
+      // reader.readAsDataURL(file);
+      // new File("/signs/sign0.jpg", { type: 'image/jpeg' });
+      // //reader.readAsDataURL(file);
+      convertFileToBase64viaFileReader("./signs/sign0.jpg");
+    }
+
+    document.getElementById('piexif-file-input').addEventListener('change', handleFileSelect, false);
+  </script>
+
+  <script>
+    function convertFileToBase64viaFileReader(url) {
+      var xhr = new XMLHttpRequest();
+      xhr.responseType = 'blob';
+      xhr.onload = function() {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          printExif(reader.result);
+        }
+        reader.readAsDataURL(xhr.response);
+      };
+      xhr.open('GET', url);
+      xhr.send();
+    }
+  </script>
+  <script>
+    // function correctOrientation(image, exif) {
+    //   var orientation = exif["0th"][piexif.TagValues.ImageIFD.Orientation];
+    //
+    //   var canvas = document.createElement("canvas");
+    //   canvas.width = image.width;
+    //   canvas.height = image.height;
+    //   var ctx = canvas.getContext("2d");
+    //   var x = 0;
+    //   var y = 0;
+    //   ctx.save();
+    //   if (orientation == 2) {
+    //     x = -canvas.width;
+    //     ctx.scale(-1, 1);
+    //   } else if (orientation == 3) {
+    //     x = -canvas.width;
+    //     y = -canvas.height;
+    //     ctx.scale(-1, -1);
+    //   } else if (orientation == 4) {
+    //     y = -canvas.height;
+    //     ctx.scale(1, -1);
+    //   } else if (orientation == 5) {
+    //     canvas.width = image.height;
+    //     canvas.height = image.width;
+    //     ctx.translate(canvas.width, canvas.height / canvas.width);
+    //     ctx.rotate(Math.PI / 2);
+    //     y = -canvas.width;
+    //     ctx.scale(1, -1);
+    //   } else if (orientation == 6) {
+    //     canvas.width = image.height;
+    //     canvas.height = image.width;
+    //     ctx.translate(canvas.width, canvas.height / canvas.width);
+    //     ctx.rotate(Math.PI / 2);
+    //   } else if (orientation == 7) {
+    //     canvas.width = image.height;
+    //     canvas.height = image.width;
+    //     ctx.translate(canvas.width, canvas.height / canvas.width);
+    //     ctx.rotate(Math.PI / 2);
+    //     x = -canvas.height;
+    //     ctx.scale(-1, 1);
+    //   } else if (orientation == 8) {
+    //     canvas.width = image.height;
+    //     canvas.height = image.width;
+    //     ctx.translate(canvas.width, canvas.height / canvas.width);
+    //     ctx.rotate(Math.PI / 2);
+    //     x = -canvas.height;
+    //     y = -canvas.width;
+    //     ctx.scale(-1, -1);
+    //   }
   </script>
 </body>
+
 
 </html>
