@@ -56,25 +56,24 @@
 
   <script>
     //piexif load test
-    function printExif(dataURL) {
+    function loadExif(dataURL, url) {
       var originalImg = new Image();
       originalImg.src = dataURL;
       var exif = piexif.load(dataURL);
       originalImg.onload = function() {
-        var w = originalImg.width;
-        var h = originalImg.height;
-        mySigns.push(originalImg);
         console.log("push" + originalImg);
-
+        mySigns.push(url); // push image name into array
         myExif.push(exif); // push exif data into array of exif data
         // console.log("push" + exif);
         // console.log( "orientation " + exif["0th"][piexif.ImageIFD.Orientation] ) ;
         // console.log( "GPSLatitude " + exif["GPS"][piexif.GPSIFD.GPSLatitude] ) ;
 
+        var DateStamp = exif["0th"][piexif.ImageIFD.DateTime] ;
+
         var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
           exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = false).addTo(mymap);
 
-        newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + "'>EXIF data <p> <img id='sign'src =" + originalImg.source + "></div>");
+        newSign.bindPopup("<div class ='sign_popup'><h1>"+ DateStamp + "</h1><p id ='signEXIF'>EXIF data <p> <img id='sign'src =" + url + "></div>");
       }
     }
 
@@ -100,7 +99,7 @@
       xhr.onload = function() {
         var reader = new FileReader();
         reader.onloadend = function() {
-          printExif(reader.result);
+          loadExif(reader.result, url);
         }
         reader.readAsDataURL(xhr.response);
       };
