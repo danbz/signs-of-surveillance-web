@@ -8,6 +8,6 @@ http://buzzo.com
 dependencies
 
  * leaflet.js library for mapping elements https://leafletjs.com
- * exif.js for EXIF data extraction https://github.com/exif-js/exif-js
+ * piexif.js for EXIF data extraction https://github.com/hMatoba/piexifjs
 
 ![screenshot](screenshot.png)

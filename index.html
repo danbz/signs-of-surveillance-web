@@ -26,7 +26,7 @@
     };
     var mySigns = [];
     var myExif = [];
-    var mymap = L.map('mapid').setView([51.505, -0.09], 13); // LONDON
+    var mymap = L.map('mapid').setView([51.505, -0.09], 5); // LONDON
     //var mymap = L.map('mapid').setView([52.379, 4.899], 13); // AMSTERDAM
     //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ";
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
@@ -42,7 +42,7 @@
 
     // to setup signs as custom icons in an array of markers
     function addSigns() {
-      var maxSigns = 20;
+      var maxSigns = 23;
       for (i = 0; i < maxSigns; i++) {
         var imagePath = "./signs/sign" + i + ".jpg";
         convertFileToBase64viaFileReader(imagePath);
@@ -90,7 +90,7 @@
       convertFileToBase64viaFileReader("./signs/sign0.jpg");
     }
 
-    document.getElementById('piexif-file-input').addEventListener('change', handleFileSelect, false);
+    // document.getElementById('piexif-file-input').addEventListener('change', handleFileSelect, false);
   </script>
 
   <script>
