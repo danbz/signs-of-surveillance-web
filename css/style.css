@@ -1,6 +1,9 @@
+p {
+    font-family: sans-serif;
+}
+
 h1#hero-title {
-  font-family: sans-serif;
-  /* margin-bottom: -20px;
+  margin-bottom: 0;
   z-index: 1000; */
   padding: 0;
 }
@@ -20,6 +23,6 @@ h1#hero-title {
 }
 
 .sign_popup img {
-  width: 200px;
+ width: 302px;
   border: 1px solid grey;
 }
