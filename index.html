@@ -10,8 +10,11 @@
   <!-- load piEXIF.js -->
   <script src="js/piexif.js"></script>
   <script src="js/load-image.all.min.js"></script>
-
-
+  <!-- include clustering plugin for leaflet -->
+  <script src="js/leaflet.markercluster.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/MarkerCluster.css">
+  <link rel="stylesheet" type="text/css" href="css/MarkerCluster.Default.css">
+  <!-- load custom stylesheet -->
   <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
@@ -48,17 +51,23 @@
           //id: 'mapbox.satellite',
           accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
         }).addTo(mymap);
+        // make clustering group for markers
+        var markers = L.markerClusterGroup();
 
         // to setup signs as custom icons in an array of markers
         function addSigns() {
-          var maxSigns = 200;
+          var maxSigns = 990;
           //var totalSigns =  document.getElementById('signTotal');
-          for (i = 120; i < maxSigns; i++) {
+          for (i = 0; i < maxSigns; i++) {
             var imagePath = "./signs/sign" + i + ".jpg";
+
+
+
 
 
             convertFileToBase64viaFileReader(imagePath); // previous routine to load via piexif.js
           }
+          mymap.addLayer(markers); // add all layers
         }
       </script>
 
@@ -85,11 +94,15 @@
             var model = exif["0th"][piexif.ImageIFD.Model];
             var orientation = exif["0th"][piexif.ImageIFD.Orientation];
 
-            var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
-              exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true).addTo(mymap);
+            //var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],  exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true).addTo(mymap);
 
-            newSign.bindPopup("<div class ='sign_popup'><h1>" + dateStamp + "</h1><p id ='make-model'>" + url + " " + make + " " + model + " <br/> Orientation: " + orientation + " <img class = 'orientation_" + orientation + "' src =" + url + "></div>");
-            signsLoaded += 1;
+              var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
+                exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true);
+            newSign.bindPopup("<div class ='sign_popup'><h1>" + dateStamp + "</h1><p id ='make-model'>" + url + " " + make + " " + model + " <br/> Orientation: " + orientation + " <img class = 'orientation_" + orientation + "' src =" + url +
+              "></div>");
+            markers.addLayer(newSign);
+
+            signsLoaded += 1; // update number of signs loaded to map
             document.getElementById("signTotal").innerHTML = signsLoaded;
 
           }
@@ -197,7 +210,7 @@
           var dataURL = canvas.toDataURL("image/jpeg", 1.0);
           var jpegBinary = atob(dataURL.split(",")[1]);
         }
-      //  image.src = image;
+        //  image.src = image;
         //postJpeg(jpegBinary);
 
 
