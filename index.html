@@ -9,160 +9,202 @@
   <script src="https://unpkg.com/leaflet@1.4.0/dist/leaflet.js" integrity="sha512-QVftwZFqvtRNi0ZyCtsznlKSWOStnDORoefr1enyq5mVL4tmKB3S/EnC3rRJcxCPavG10IcrVGSmPh6Qw5lwrg==" crossorigin=""></script>
   <!-- load piEXIF.js -->
   <script src="js/piexif.js"></script>
+  <script src="js/load-image.all.min.js"></script>
+
+
   <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 
 <body>
   <h1 id='hero-title'>Signs of Surveillance</h1>
-  <h2 id ='sub-title'>A photography project by <a href = "http://www.buzzo.com" >Daniel Buzzo</a><h2>
-  <p id = "loading-notice"><span id ='signTotal'>0</span> signs loaded</p>
+  <h2 id='sub-title'>A photography project by <a href="http://www.buzzo.com">Daniel Buzzo</a>
+    <h2>
+      <p id="loading-notice"><span id='signTotal'>0</span> signs loaded</p>
 
-  <!--p>test piExif routine.
+      <!--p>test piExif routine.
     <br /> <input id="piexif-file-input" type="file" />
   </p-->
-  <div id="mapid"></div>
+      <div id="mapid"></div>
 
-  <script>
-    window.onload = function() {
-      addSigns()
-    };
-    var mySigns = [];
-    var myExif = [];
-    var signsLoaded = 0;
-    var mymap = L.map('mapid').setView([51.505, -0.09], 5); // LONDON
-    //var mymap = L.map('mapid').setView([52.379, 4.899], 5); // AMSTERDAM
-    //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ";
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
-      maxZoom: 20, minZoom: 3,
-      //id: 'mapbox.streets',
-      //id: 'mapbox.dark',
-      id: 'mapbox.light',
-      //id: 'mapbox.outdoors',
-      //id: 'mapbox.satellite',
-      accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
-    }).addTo(mymap);
+      <script>
+        window.onload = function() {
+          addSigns()
+        };
 
-    // to setup signs as custom icons in an array of markers
-    function addSigns() {
-      var maxSigns = 996;
-      //var totalSigns =  document.getElementById('signTotal');
-      for (i = 0; i < maxSigns; i++) {
-        var imagePath = "./signs/sign" + i + ".jpg";
-        convertFileToBase64viaFileReader(imagePath);
-        /////// adding signs using markers /////////
-        // var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg( myExif[i].GPSLatitude, myExif[i].GPSLatitudeRef ), piexif.GPSHelper.dmsRationalToDeg(myExif[i].GPSLongtitude, myExif[i].GPSLongtitudeRef ) ], riseOnHover = true, autoclose = false).addTo(mymap);
-        // newSign.bindPopup("<div class ='sign_popup'><h1>DateStamp</h1><p  id ='signEXIF" + i + "'>EXIF data <p> <img id='sign" + i + "'src =" + imagePath + "></div>");
+        var mySigns = [];
+        var myExif = [];
+        var signsLoaded = 0;
+        var mymap = L.map('mapid').setView([51.505, -0.09], 5); // LONDON
+        //var mymap = L.map('mapid').setView([52.379, 4.899], 5); // AMSTERDAM
+        //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ";
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+          attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
+          maxZoom: 20,
+          minZoom: 3,
+          //id: 'mapbox.streets',
+          //id: 'mapbox.dark',
+          id: 'mapbox.light',
+          //id: 'mapbox.outdoors',
+          //id: 'mapbox.satellite',
+          accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
+        }).addTo(mymap);
 
-      }
-    }
-  </script>
+        // to setup signs as custom icons in an array of markers
+        function addSigns() {
+          var maxSigns = 200;
+          //var totalSigns =  document.getElementById('signTotal');
+          for (i = 120; i < maxSigns; i++) {
+            var imagePath = "./signs/sign" + i + ".jpg";
 
-  <script>
-    //piexif load test
-    function loadExif(dataURL, url) {
-      var originalImg = new Image();
-      originalImg.src = dataURL;
-      var exif = piexif.load(dataURL);
-      originalImg.onload = function() {
-        mySigns.push(url); // push image name into array
-        myExif.push(exif); // push exif data into array of exif data
-        // console.log( "orientation " + exif["0th"][piexif.ImageIFD.Orientation] ) ;
-        // console.log( "GPSLatitude " + exif["GPS"][piexif.GPSIFD.GPSLatitude] ) ;
 
-        var DateStamp = exif["0th"][piexif.ImageIFD.DateTime] ;
-        var Make = exif["0th"][piexif.ImageIFD.Make] ;
-        var Model = exif["0th"][piexif.ImageIFD.Model] ;
-        var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
-          exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true).addTo(mymap);
-
-        newSign.bindPopup("<div class ='sign_popup'><h1>"+ DateStamp + "</h1><p id ='make-model'>" + Make + " " + Model + " <p> <img id='sign'src =" + url + "></div>");
-        signsLoaded +=1;
-        document.getElementById("signTotal").innerHTML = signsLoaded;
-
-      }
-    }
-
-    function handleFileSelect(evt) {
-      // var file = evt.target.files[0];
-      // var reader = new FileReader();
-      // reader.onloadend = function(e) {
-      //   printExif(e.target.result);
-      // };
-      // reader.readAsDataURL(file);
-      // new File("/signs/sign0.jpg", { type: 'image/jpeg' });
-      // //reader.readAsDataURL(file);
-      convertFileToBase64viaFileReader("./signs/sign0.jpg");
-    }
-
-    // document.getElementById('piexif-file-input').addEventListener('change', handleFileSelect, false);
-  </script>
-
-  <script>
-    function convertFileToBase64viaFileReader(url) {
-      var xhr = new XMLHttpRequest();
-      xhr.responseType = 'blob';
-      xhr.onload = function() {
-        var reader = new FileReader();
-        reader.onloadend = function() {
-          loadExif(reader.result, url);
+            convertFileToBase64viaFileReader(imagePath); // previous routine to load via piexif.js
+          }
         }
-        reader.readAsDataURL(xhr.response);
-      };
-      xhr.open('GET', url);
-      xhr.send();
-    }
-  </script>
-  <script>
-    // function correctOrientation(image, exif) {
-    //   var orientation = exif["0th"][piexif.TagValues.ImageIFD.Orientation];
-    //
-    //   var canvas = document.createElement("canvas");
-    //   canvas.width = image.width;
-    //   canvas.height = image.height;
-    //   var ctx = canvas.getContext("2d");
-    //   var x = 0;
-    //   var y = 0;
-    //   ctx.save();
-    //   if (orientation == 2) {
-    //     x = -canvas.width;
-    //     ctx.scale(-1, 1);
-    //   } else if (orientation == 3) {
-    //     x = -canvas.width;
-    //     y = -canvas.height;
-    //     ctx.scale(-1, -1);
-    //   } else if (orientation == 4) {
-    //     y = -canvas.height;
-    //     ctx.scale(1, -1);
-    //   } else if (orientation == 5) {
-    //     canvas.width = image.height;
-    //     canvas.height = image.width;
-    //     ctx.translate(canvas.width, canvas.height / canvas.width);
-    //     ctx.rotate(Math.PI / 2);
-    //     y = -canvas.width;
-    //     ctx.scale(1, -1);
-    //   } else if (orientation == 6) {
-    //     canvas.width = image.height;
-    //     canvas.height = image.width;
-    //     ctx.translate(canvas.width, canvas.height / canvas.width);
-    //     ctx.rotate(Math.PI / 2);
-    //   } else if (orientation == 7) {
-    //     canvas.width = image.height;
-    //     canvas.height = image.width;
-    //     ctx.translate(canvas.width, canvas.height / canvas.width);
-    //     ctx.rotate(Math.PI / 2);
-    //     x = -canvas.height;
-    //     ctx.scale(-1, 1);
-    //   } else if (orientation == 8) {
-    //     canvas.width = image.height;
-    //     canvas.height = image.width;
-    //     ctx.translate(canvas.width, canvas.height / canvas.width);
-    //     ctx.rotate(Math.PI / 2);
-    //     x = -canvas.height;
-    //     y = -canvas.width;
-    //     ctx.scale(-1, -1);
-    //   }
-  </script>
+      </script>
+
+
+      <script>
+        //piexif load test
+        function loadExif(dataURL, url) {
+          var originalImg = new Image();
+          originalImg.src = dataURL;
+          var exif = piexif.load(dataURL);
+          originalImg.onload = function() {
+            ///////////
+
+
+            mySigns.push(url); // push image name into array
+            myExif.push(exif); // push exif data into array of exif data
+            // console.log( "orientation " + exif["0th"][piexif.ImageIFD.Orientation] ) ;
+            // console.log( "GPSLatitude " + exif["GPS"][piexif.GPSIFD.GPSLatitude] ) ;
+            console.log(url);
+            correctOrientation(originalImg, exif); //correct orientation of loading images
+
+            var dateStamp = exif["0th"][piexif.ImageIFD.DateTime];
+            var make = exif["0th"][piexif.ImageIFD.Make];
+            var model = exif["0th"][piexif.ImageIFD.Model];
+            var orientation = exif["0th"][piexif.ImageIFD.Orientation];
+
+            var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
+              exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true).addTo(mymap);
+
+            newSign.bindPopup("<div class ='sign_popup'><h1>" + dateStamp + "</h1><p id ='make-model'>" + url + " " + make + " " + model + " <br/> Orientation: " + orientation + " <img class = 'orientation_" + orientation + "' src =" + url + "></div>");
+            signsLoaded += 1;
+            document.getElementById("signTotal").innerHTML = signsLoaded;
+
+          }
+        }
+
+        function handleFileSelect(evt) {
+          // var file = evt.target.files[0];
+          // var reader = new FileReader();
+          // reader.onloadend = function(e) {
+          //   printExif(e.target.result);
+          // };
+          // reader.readAsDataURL(file);
+          // new File("/signs/sign0.jpg", { type: 'image/jpeg' });
+          // //reader.readAsDataURL(file);
+          convertFileToBase64viaFileReader("./signs/sign0.jpg");
+        }
+
+        // document.getElementById('piexif-file-input').addEventListener('change', handleFileSelect, false);
+      </script>
+
+      <script>
+        function convertFileToBase64viaFileReader(url) {
+          var xhr = new XMLHttpRequest();
+          xhr.responseType = 'blob';
+          xhr.onload = function() {
+            var reader = new FileReader();
+            reader.onloadend = function() {
+              loadExif(reader.result, url);
+            }
+            reader.readAsDataURL(xhr.response);
+          };
+          xhr.open('GET', url);
+          xhr.send();
+        }
+      </script>
+
+      <script>
+        function correctOrientation(image, exif) {
+          // var image = new Image();
+          // image.onload = function() {
+          var orientation = exif["0th"][piexif.ImageIFD.Orientation];
+          console.log("orientation " + orientation);
+          var canvas = document.createElement("canvas");
+          canvas.width = image.width;
+          canvas.height = image.height;
+          var ctx = canvas.getContext("2d");
+          var x = 0;
+          var y = 0;
+          ctx.save();
+          if (orientation == 2) {
+            x = -canvas.width;
+            ctx.scale(-1, 1);
+            console.log("scaled 2");
+
+          } else if (orientation == 3) {
+            x = -canvas.width;
+            y = -canvas.height;
+            ctx.scale(-1, -1);
+            console.log("scaled 3");
+
+          } else if (orientation == 4) {
+            y = -canvas.height;
+            ctx.scale(1, -1);
+            console.log("scaled 4");
+
+          } else if (orientation == 5) {
+            canvas.width = image.height;
+            canvas.height = image.width;
+            ctx.translate(canvas.width, canvas.height / canvas.width);
+            ctx.rotate(Math.PI / 2);
+            y = -canvas.width;
+            ctx.scale(1, -1);
+            console.log("scaled 5");
+
+          } else if (orientation == 6) {
+            canvas.width = image.height;
+            canvas.height = image.width;
+            ctx.translate(canvas.width, canvas.height / canvas.width);
+            ctx.rotate(Math.PI / 2);
+            console.log("scaled 6");
+
+          } else if (orientation == 7) {
+            canvas.width = image.height;
+            canvas.height = image.width;
+            ctx.translate(canvas.width, canvas.height / canvas.width);
+            ctx.rotate(Math.PI / 2);
+            x = -canvas.height;
+            ctx.scale(-1, 1);
+            console.log("scaled 7");
+
+          } else if (orientation == 8) {
+            canvas.width = image.height;
+            canvas.height = image.width;
+            ctx.translate(canvas.width, canvas.height / canvas.width);
+            ctx.rotate(Math.PI / 2);
+            x = -canvas.height;
+            y = -canvas.width;
+            ctx.scale(-1, -1);
+            console.log("scaled  8");
+          }
+
+          ctx.drawImage(image, x, y);
+          ctx.restore();
+
+          var dataURL = canvas.toDataURL("image/jpeg", 1.0);
+          var jpegBinary = atob(dataURL.split(",")[1]);
+        }
+      //  image.src = image;
+        //postJpeg(jpegBinary);
+
+
+
+
+        //}
+      </script>
 </body>
 
 

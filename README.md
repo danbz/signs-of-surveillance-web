@@ -10,4 +10,6 @@ dependencies
  * leaflet.js library for mapping elements https://leafletjs.com
  * piexif.js for EXIF data extraction https://github.com/hMatoba/piexifjs
 
+ * Javascript load image library https://github.com/blueimp/JavaScript-Load-Image
+
 ![screenshot](screenshot.png)
