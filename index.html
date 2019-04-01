@@ -52,7 +52,10 @@
           accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
         }).addTo(mymap);
         // make clustering group for markers
-        var markers = L.markerClusterGroup();
+        var markers = L.markerClusterGroup({
+          maxClusterRadius: 25
+        }
+      );
 
         // to setup signs as custom icons in an array of markers
         function addSigns() {
