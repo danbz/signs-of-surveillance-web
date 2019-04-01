@@ -14,12 +14,12 @@
 
 <body>
   <h1 id='hero-title'>Signs of Surveillance</h1>
-  <p>A global map of <em>Signs of Surveillance</em> by Daniel Buzzo
-  <br/><small><span id ='signTotal'>50</span> signs loaded</small></p>
+  <h2 id ='sub-title'>A photography project by <a href = "http://www.buzzo.com" >Daniel Buzzo</a><h2>
+  <p id = "loading-notice"><span id ='signTotal'>0</span> signs loaded</p>
+
   <!--p>test piExif routine.
     <br /> <input id="piexif-file-input" type="file" />
   </p-->
-
   <div id="mapid"></div>
 
   <script>
@@ -28,6 +28,7 @@
     };
     var mySigns = [];
     var myExif = [];
+    var signsLoaded = 0;
     var mymap = L.map('mapid').setView([51.505, -0.09], 5); // LONDON
     //var mymap = L.map('mapid').setView([52.379, 4.899], 5); // AMSTERDAM
     //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ";
@@ -46,7 +47,6 @@
     function addSigns() {
       var maxSigns = 996;
       //var totalSigns =  document.getElementById('signTotal');
-      document.getElementById("signTotal").innerHTML = maxSigns;
       for (i = 0; i < maxSigns; i++) {
         var imagePath = "./signs/sign" + i + ".jpg";
         convertFileToBase64viaFileReader(imagePath);
@@ -77,6 +77,9 @@
           exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true).addTo(mymap);
 
         newSign.bindPopup("<div class ='sign_popup'><h1>"+ DateStamp + "</h1><p id ='make-model'>" + Make + " " + Model + " <p> <img id='sign'src =" + url + "></div>");
+        signsLoaded +=1;
+        document.getElementById("signTotal").innerHTML = signsLoaded;
+
       }
     }
 
