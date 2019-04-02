@@ -42,6 +42,10 @@ p#loading-notice {
   height: 100vh;
 }
 
+.leaflet-popup-content-wrapper {
+  overflow: auto;
+}
+
 /* sign styling */
 .sign_popup h1 {
   font-size: 90%;
@@ -58,9 +62,9 @@ p#loading-notice {
 
 /* rotation of images */
 img.orientation_8  {
-  transform: rotate(90deg) ;
-  -webkit-transform: rotate(90deg);
-  -ms-transform: rotate(90deg) ;
+  transform: rotate(-90deg) ;
+  -webkit-transform: rotate(-90deg);
+  -ms-transform: rotate(-90deg) ;
   width: 100%;
   height:100%
 
@@ -73,7 +77,7 @@ img.orientation_3 {
 }
 
 img.orientation_6  {
-  transform: rotate(270deg);
-  -webkit-transform: rotate(270deg);
-  -ms-transform: rotate(270deg);
+  transform: rotate(90deg);
+  -webkit-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
 }
