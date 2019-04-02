@@ -2,6 +2,7 @@ body {
     font-family: sans-serif;
     border:0;
     margin:0;
+    background:black;
 }
 /* typography */
 h1#hero-title {
