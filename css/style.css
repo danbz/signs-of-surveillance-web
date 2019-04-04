@@ -1,13 +1,14 @@
 body {
-    font-family: sans-serif;
-    border:0;
-    margin:0;
-    background:black;
+  font-family: sans-serif;
+  border: 0;
+  margin: 0;
+  background: black;
 }
+
 /* typography */
 h1#hero-title {
   /* font-family: sans-serif; */
-  font-weight:bolder ;
+  font-weight: bolder;
   margin-bottom: 0;
   padding: 0;
 }
@@ -21,20 +22,22 @@ h2#sub-title {
 p#loading-notice {
   font-size: 50%;
   padding: 0;
-  margin:0;
+  margin: 0;
 }
+
 /* title box */
 .info {
-    padding: 6px 8px;
-    font: 14px/16px Arial, Helvetica, sans-serif;
-    background: white;
-    background: rgba(255,255,255,0.7);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
+  padding: 6px 8px;
+  font: 14px/16px Arial, Helvetica, sans-serif;
+  background: white;
+  background: rgba(255, 255, 255, 0.7);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  border-radius: 5px;
 }
+
 .info h4 {
-    margin: 0 0 5px;
-    color: #777;
+  margin: 0 0 5px;
+  color: #777;
 }
 
 /* mapstyling */
@@ -44,8 +47,13 @@ p#loading-notice {
 
 .leaflet-popup-content-wrapper {
   overflow: auto;
+  display: table;
+  with
 }
 
+div.sign_popup{
+  display: table;
+}
 /* sign styling */
 .sign_popup h1 {
   font-size: 90%;
@@ -56,28 +64,40 @@ p#loading-notice {
 }
 
 .sign_popup img {
- width: 302px;
- border: 1px solid grey;
+  /* width: 302px; */
+  display: block;
+  transform-origin: top left;
+  /* Note: for a CLOCKWISE rotation, use the commented-out
+    transform instead of this one. */
+  /* transform: rotate(90deg) translate(0, -100%); */
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: -50%;
+  align:center;
+
+}
+
+.sign_popup_inner {
+ padding: 50% 0;
+  height: 0;
 }
 
 /* rotation of images */
-img.orientation_8  {
-  transform: rotate(-90deg) ;
-  -webkit-transform: rotate(-90deg);
-  -ms-transform: rotate(-90deg) ;
-  width: 100%;
-  height:100%
-
+img.orientation_8 {
+  transform: rotate(-90deg) translate(-100%);
+  -webkit-transform: rotate(-90deg) translate(-100%);
+  -ms-transform: rotate(-90deg) translate(-100%);
 }
 
 img.orientation_3 {
-  transform: rotate(180deg) ;
-  -webkit-transform: rotate(180deg) ;
-  -ms-transform: rotate(180deg) ;
+  transform: rotate(180deg) translate(-100%, -100%);
+  -webkit-transform: rotate(180deg) translate(-100%, -100%);
+  -ms-transform: rotate(180deg) translate(-100%, -100%);
 }
 
-img.orientation_6  {
-  transform: rotate(90deg);
-  -webkit-transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
+img.orientation_6 {
+  transform: rotate(90deg) translate(0, -100%);
+  -webkit-transform: rotate(90deg) translate(0, -100%);
+  -ms-transform: rotate(90deg) translate(0, -100%);
+
 }
