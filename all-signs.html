@@ -7,7 +7,7 @@
   <meta name="keywords" content="artwork, photography, surveillance, media art, daniel buzzo, signs of surveillance, mapping, digital art, web art, digital civics, privacy">
   <meta name="Description" content=" 'Signs of Surveillance' is a web based photographic art project by Daniel Buzzo">
 
-  <title>Signs of Surveillance</title>
+  <title>Signs of Surveillance - all Signs</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.4.0/dist/leaflet.css" integrity="sha512-puBpdR0798OZvTTbP4A8Ix/l+A4dHDD0DGqYW6RQ+9jxkRFclaxxQb/SJAWZfWAkuyeQUytO7+7N4QKrDh+drA==" crossorigin="" />
 
   <!-- Make sure you put this AFTER Leaflet's CSS -->
@@ -25,6 +25,8 @@
   <link rel="stylesheet" type="text/css" href="css/style.css">
   <!-- custom javascript sheets -->
   <script src="js/reorientate.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 </head>
 
 <body>
@@ -32,11 +34,26 @@
   <!--p>test piExif routine.
     <br /> <input id="piexif-file-input" type="file" />
   </p-->
-  <div id="mapid"></div>
+  <!-- <div id="mapid"></div> -->
+  <header>
+    <h1 id='hero-title'>Signs of Surveillance</h1>
+    <h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2>
+    <p id='loading-notice'><span id='signTotal'>0</span> signs loaded of <span id='signMax'>0</span></p>
+  </header>
+  <div class='grid_container'>
 
+    <p id='intro'>the signs</p>
+
+  </div>
   <script>
+    // $(document).ready(function() {
+    //   $("button").click(function() {
+    //   $("<span>Hello world!</span>").insertAfter("p");
+    //   });
+    // });
     window.onload = function() {
       addSigns()
+      document.getElementById("signMax").innerHTML = maxSigns;
 
       // example reverse GeoCode test
       var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20-0.09%2C51.505.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true';
@@ -45,49 +62,49 @@
       //  var locality = httpGetAsync(geocodeDataUrl);
 
     };
-    var maxSigns = 1456; // number of sign-images to load
+    var maxSigns = 500; // number of sign-images to load
     var mySigns = []; // array of sign-image names
     var myExif = []; // array of EXIF data for loaded sign-images
     var signsLoaded = 0; // initialise count of loaded sign-images
 
-    var mymap = L.map('mapid').setView([51.505, -0.09], 5); // generate map gentred on LONDON
-    //var mymap = L.map('mapid').setView([52.379, 4.899], 5); // generate map gentred on AMSTERDAM
-    //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ"; // mapbox access token
-    L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
-      maxZoom: 20,
-      minZoom: 3,
-      // mapbox styling
-      // id: 'mapbox.streets',
-      id: 'mapbox.dark',
-      // id: 'mapbox.light',
-      // id: 'mapbox.outdoors',
-      // id: 'mapbox.satellite',
-      accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
-    }).addTo(mymap);
+    // var mymap = L.map('mapid').setView([51.505, -0.09], 5); // generate map gentred on LONDON
+    // //var mymap = L.map('mapid').setView([52.379, 4.899], 5); // generate map gentred on AMSTERDAM
+    // //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ"; // mapbox access token
+    // L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+    //   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
+    //   maxZoom: 20,
+    //   minZoom: 3,
+    //   // mapbox styling
+    //   // id: 'mapbox.streets',
+    //   id: 'mapbox.dark',
+    //   // id: 'mapbox.light',
+    //   // id: 'mapbox.outdoors',
+    //   // id: 'mapbox.satellite',
+    //   accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
+    // }).addTo(mymap);
 
     // add info to the map
-    var info = L.control(); // new leaflet map control layer
-    info.onAdd = function(mymap) {
-      this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-      this.update();
-      return this._div;
-    };
+    // var info = L.control(); // new leaflet map control layer
+    // info.onAdd = function(mymap) {
+    //   this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
+    //   this.update();
+    //   return this._div;
+    // };
 
     // method that we will use to update the control based on feature properties passed
-    info.update = function(props) { // populate info map control layer
-      this._div.innerHTML = "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of " +
-        maxSigns + "</p>"
-    };
+    // info.update = function(props) { // populate info map control layer
+    //   this._div.innerHTML = "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of " +
+    //     maxSigns + "</p>"
+    // };
 
-    info.addTo(mymap); // add info layer to map
+    // info.addTo(mymap); // add info layer to map
 
     // make clustering group for markers
-    var markers = L.markerClusterGroup({
-      maxClusterRadius: 25,
-      spiderfyOnMaxZoom: false,
-      disableClusteringAtZoom: 17
-    });
+    // var markers = L.markerClusterGroup({
+    //   maxClusterRadius: 25,
+    //   spiderfyOnMaxZoom: false,
+    //   disableClusteringAtZoom: 17
+    // });
 
     // to setup signs as custom icons in an array of markers
     function addSigns() {
@@ -96,7 +113,7 @@
         convertFileToBase64viaFileReader(imagePath); // previous routine to load via piexif.js
       }
 
-      mymap.addLayer(markers); // add marker layer
+      //  mymap.addLayer(markers); // add marker layer
     }
   </script>
 
@@ -135,17 +152,19 @@
           ".json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true";
         //console.log("returned geodata " +  httpGetAsync(geocodeDataUrl));
 
-
-
         // create new image-sign marker for map
-        var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
-          exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true);
+        // var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
+        //   exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true);
         // bind popup information to sign-image marker
-        newSign.bindPopup("<div class ='sign_popup' style = 'width:302px;'><h1>" + signName + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src =" + url +
-          "></div> <p>Seen on " + newPrettyDate + ", " + newPrettyTime + "<br/>Recorded with " + make + " " + model + ". ");
+        // newSign.bindPopup("<div class ='sign_popup' style = 'width:302px;'><h1>" + signName + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src =" + url +
+        //   "></div> <p>Seen on " + newPrettyDate + ", " + newPrettyTime + "<br/>Recorded with " + make + " " + model + ". ");
         //console.log(  newSign._popup._content ) ;
-        markers.addLayer(newSign);
-        var locality = httpGetAsync(geocodeDataUrl, newSign);
+        // markers.addLayer(newSign);
+
+        $("<div class ='sign_grid' style = 'width:302px;'><h1>" + signName + "</h1><div class='sign_grid_inner'><img class = 'grid_orientation_" + orientation + "' src =" + url + "></div> <p>Seen on " + newPrettyDate + ", " + newPrettyTime +
+          "<br/>Recorded with " + make + " " + model + ". ").insertAfter("p#intro");
+        // $("<div class = 'sign'> hello </div>").insertAfter("p#intro");
+        //var locality = httpGetAsync(geocodeDataUrl, newSign);
         signsLoaded += 1; // update number of signs loaded to map
         document.getElementById("signTotal").innerHTML = signsLoaded;
       }
@@ -163,7 +182,7 @@
           locality = myLocality.features[2].place_name;
           var content = sign._popup._content;
 
-          sign._popup._content =  content + locality + "</p></div>";
+          sign._popup._content = content + locality + "</p></div>";
         }
       }
       xmlHttp.open("GET", theUrl, true); // true for asynchronous

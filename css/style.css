@@ -2,7 +2,6 @@ body {
   font-family: sans-serif;
   border: 0;
   margin: 0;
-  background: black;
 }
 
 /* typography */
@@ -51,18 +50,19 @@ p#loading-notice {
   with
 }
 
-div.sign_popup{
+div.sign_popup {
   display: table;
 }
+
 /* sign styling */
-.sign_popup h1 {
+.sign_popup h1, .sign_grid h1 {
   font-size: 90%;
 }
 
-.sign_popup p {
+.sign_popup p, .sign_grid p {
   font-size: 90%;
   margin-block-start: 0.1em;
-    margin-block-end: 0.1em;
+  margin-block-end: 0.1em;
 }
 
 .sign_popup img {
@@ -75,12 +75,11 @@ div.sign_popup{
   margin-left: auto;
   margin-right: auto;
   margin-top: -50%;
-  align:center;
-
+  align: center;
 }
 
 .sign_popup_inner {
- padding: 50% 0;
+  padding: 50% 0;
   height: 0;
 }
 
@@ -101,5 +100,57 @@ img.orientation_6 {
   transform: rotate(90deg) translate(0, -100%);
   -webkit-transform: rotate(90deg) translate(0, -100%);
   -ms-transform: rotate(90deg) translate(0, -100%);
+}
 
+/* grid styling */
+.grid_container {
+  display: grid;
+  grid-template-columns: auto auto auto auto;
+  padding: 5px;
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
+}
+
+.sign_grid {
+  /* float: left;*/
+  border: 1px solid grey;
+  /* display: block;
+  transform-origin: top left;
+  /* Note: for a CLOCKWISE rotation, use the commented-out
+    transform instead of this one. */
+  /* transform: rotate(90deg) translate(0, -100%); */
+  /* margin-left: auto;
+  margin-right: auto;
+  margin-top: -50%;
+  align: center; */
+  padding: 5px;
+}
+
+.sign_grid img{
+  width:80%;
+}
+
+.signGrid_inner {
+  /*padding: 50% 0;
+  height: 0;*/
+}
+
+/* rotation of images */
+img.grid_orientation_8 {
+  transform: rotate(-90deg) translate(-0%);
+  -webkit-transform: rotate(-90deg) translate(-0%);
+  -ms-transform: rotate(-90deg) translate(-0%);
+
+}
+
+img.grid_orientation_3 {
+  transform: rotate(180deg) translate(-0%, -0%);
+  -webkit-transform: rotate(180deg) translate(-0%, -0%);
+  -ms-transform: rotate(180deg) translate(-0%, -0%);
+}
+
+ img.grid_orientation_6 {
+  transform: rotate(90deg) translate(0, -0%);
+  -webkit-transform: rotate(90deg) translate(0, -0%);
+  -ms-transform: rotate(90deg) translate(0, -0%);
 }
