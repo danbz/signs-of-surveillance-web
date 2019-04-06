@@ -35,23 +35,31 @@
   <div id="mapid"></div>
 
   <script>
-    window.onload = function() {
-      addSigns()
-
-      // example reverse GeoCode test
-      var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20-0.09%2C51.505.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true';
-      //console.log("returned geodata " +  httpGetAsync(geocodeDataUrl));
-
-      //  var locality = httpGetAsync(geocodeDataUrl);
-
-    };
-    var maxSigns = 1456; // number of sign-images to load
+    // global variables
+    //  var maxSigns = 1456; // number of sign-images to load
+    var maxSigns = 100; // number of sign-images to load
     var mySigns = []; // array of sign-image names
     var myExif = []; // array of EXIF data for loaded sign-images
     var signsLoaded = 0; // initialise count of loaded sign-images
+    var b_traversingMarkers = false;
+    var currentMarker = 0;
+    var delayMilli = 9000; // delay between flyto marker animation events occurring
+    var openMarkerDelay = 4000; // delay time on auto popup open and close
+    var closeMarkerDelay = 8000; // delay time on auto popup open and close
+    var flyAnimationLength = 7; // time in seconds for flyto marker animation
+    var flyMaxZoom = 18;
+    var markersList = []; // array of all markers added to clustering _layer
+    window.onload = function() {
+      addSigns() // add all the signs to the map
+      // example reverse GeoCode test
+      // var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20-0.09%2C51.505.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true';
+      //console.log("returned geodata " +  httpGetAsync(geocodeDataUrl));
 
-    var mymap = L.map('mapid').setView([51.505, -0.09], 5); // generate map gentred on LONDON
-    //var mymap = L.map('mapid').setView([52.379, 4.899], 5); // generate map gentred on AMSTERDAM
+      //  var locality = httpGetAsync(geocodeDataUrl);
+    };
+
+    var myMap = L.map('mapid').setView([51.505, -0.09], 5); // generate map gentred on LONDON
+    //var myMap = L.map('mapid').setView([52.379, 4.899], 5); // generate map gentred on AMSTERDAM
     //var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ"; // mapbox access token
     L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
       attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
@@ -64,11 +72,11 @@
       // id: 'mapbox.outdoors',
       // id: 'mapbox.satellite',
       accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
-    }).addTo(mymap);
+    }).addTo(myMap);
 
     // add info to the map
     var info = L.control(); // new leaflet map control layer
-    info.onAdd = function(mymap) {
+    info.onAdd = function(myMap) {
       this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
       this.update();
       return this._div;
@@ -77,16 +85,15 @@
     // method that we will use to update the control based on feature properties passed
     info.update = function(props) { // populate info map control layer
       this._div.innerHTML = "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of " +
-        maxSigns + "</p>"
+        maxSigns + ". Traverse is <span id='traverseMarkers'>false</span>. Viewing sign <span id='currentSign'>0</span></p><button onclick='traverseMarkers()'>Traverse Markers</button>"
     };
-
-    info.addTo(mymap); // add info layer to map
+    info.addTo(myMap); // add info layer to map
 
     // make clustering group for markers
     var markers = L.markerClusterGroup({
       maxClusterRadius: 25,
       spiderfyOnMaxZoom: false,
-      disableClusteringAtZoom: 17
+      disableClusteringAtZoom: 16
     });
 
     // to setup signs as custom icons in an array of markers
@@ -96,7 +103,59 @@
         convertFileToBase64viaFileReader(imagePath); // previous routine to load via piexif.js
       }
 
-      mymap.addLayer(markers); // add marker layer
+      myMap.addLayer(markers); // add marker layer
+    }
+
+    // traverse map from marker to marker in array
+
+    function traverseMarkers() {
+      b_traversingMarkers = !b_traversingMarkers;
+      currentMarker = 0;
+      document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
+      document.getElementById("currentSign").innerHTML = currentMarker;
+      if (b_traversingMarkers) {
+        interval = setInterval(incrementTraverse, delayMilli);
+      } else {
+        clearInterval(interval);
+      }
+    }
+
+    function incrementTraverse() {
+      // fly from marker to marker on the map
+      if (currentMarker >= maxSigns) {
+        currentMarker = 0;
+      } else {
+        currentMarker += 1;
+      }
+      var exif = myExif[currentMarker];
+      var lat = piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]);
+      var long = piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
+        exif["GPS"][piexif.GPSIFD.GPSLongitudeRef]);
+      //myMap.panTo([lat, long]);
+      document.getElementById("currentSign").innerHTML = currentMarker;
+      // str = JSON.stringify(markers);
+      // str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
+      // console.log( markers);
+        myMap.flyTo([lat, long], flyMaxZoom, {   duration: flyAnimationLength  });
+      //   m = markersList[currentMarker];
+      // //markers.zoomToShowLayer(m, function() {
+      //   m.addTo(myMap);
+      //   m.openPopup();
+      setTimeout(openPopupMarker, openMarkerDelay);
+        setTimeout(removePopupMarker, closeMarkerDelay);
+    //  });
+    //  markersList[currentMarker].openPopup();
+    }
+
+    function openPopupMarker(){
+      var m = markersList[currentMarker];
+      m.addTo(myMap);
+      m.openPopup();   //});
+    }
+
+    function removePopupMarker(){
+      var m = markersList[currentMarker];
+      myMap.removeLayer(m);    //});
     }
   </script>
 
@@ -143,13 +202,13 @@
           "></div> <p>Seen on " + newPrettyDate + ", " + newPrettyTime + "<br/>Recorded with " + make + " " + model + ". ");
         //console.log(  newSign._popup._content ) ;
 
-        newSign.on('mouseover', function (e) {
-           this.openPopup();
-       });
-       newSign.on('mouseout', function (e) {
-           this.closePopup();
-       });
-
+        newSign.on('mouseover', function(e) {
+          this.openPopup();
+        });
+        newSign.on('mouseout', function(e) {
+          this.closePopup();
+        });
+        markersList.push(newSign);
         markers.addLayer(newSign);
         var locality = httpGetAsync(geocodeDataUrl, newSign);
         signsLoaded += 1; // update number of signs loaded to map
@@ -169,7 +228,7 @@
           locality = myLocality.features[2].place_name;
           var content = sign._popup._content;
 
-          sign._popup._content =  content + locality + "</p></div>";
+          sign._popup._content = content + locality + "</p></div>";
         }
       }
       xmlHttp.open("GET", theUrl, true); // true for asynchronous
