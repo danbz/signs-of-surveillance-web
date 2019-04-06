@@ -1,5 +1,7 @@
 <!doctype HTML>
 <html lang="en">
+<!-- copyright daniel buzzo 2019, all rights reserved -->
+<!-- dan@buzzo.com  http://buzzo.com -->
 
 <head>
   <meta charset="utf-8">
@@ -36,8 +38,8 @@
 
   <script>
     // global variables
-    //  var maxSigns = 1456; // number of sign-images to load
-    var maxSigns = 100; // number of sign-images to load
+      var maxSigns = 1456; // number of sign-images to load
+  //  var maxSigns = 100; // number of sign-images to load
     var mySigns = []; // array of sign-image names
     var myExif = []; // array of EXIF data for loaded sign-images
     var signsLoaded = 0; // initialise count of loaded sign-images
@@ -110,11 +112,12 @@
 
     function traverseMarkers() {
       b_traversingMarkers = !b_traversingMarkers;
-      currentMarker = 0;
+    //  currentMarker = 0;
       document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
       document.getElementById("currentSign").innerHTML = currentMarker;
       if (b_traversingMarkers) {
         interval = setInterval(incrementTraverse, delayMilli);
+        incrementTraverse();
       } else {
         clearInterval(interval);
       }
@@ -131,31 +134,25 @@
       var lat = piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]);
       var long = piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
         exif["GPS"][piexif.GPSIFD.GPSLongitudeRef]);
-      //myMap.panTo([lat, long]);
       document.getElementById("currentSign").innerHTML = currentMarker;
-      // str = JSON.stringify(markers);
-      // str = JSON.stringify(obj, null, 4); // (Optional) beautiful indented output.
-      // console.log( markers);
-        myMap.flyTo([lat, long], flyMaxZoom, {   duration: flyAnimationLength  });
-      //   m = markersList[currentMarker];
-      // //markers.zoomToShowLayer(m, function() {
-      //   m.addTo(myMap);
-      //   m.openPopup();
+      myMap.flyTo([lat, long], flyMaxZoom, {
+        duration: flyAnimationLength
+      });
       setTimeout(openPopupMarker, openMarkerDelay);
-        setTimeout(removePopupMarker, closeMarkerDelay);
-    //  });
-    //  markersList[currentMarker].openPopup();
+      setTimeout(removePopupMarker, closeMarkerDelay);
     }
 
-    function openPopupMarker(){
+    function openPopupMarker() {
       var m = markersList[currentMarker];
+      markers.removeLayer(m);
       m.addTo(myMap);
-      m.openPopup();   //});
+      m.openPopup();
     }
 
-    function removePopupMarker(){
+    function removePopupMarker() {
       var m = markersList[currentMarker];
-      myMap.removeLayer(m);    //});
+      myMap.removeLayer(m);
+      markers.addLayer(m);
     }
   </script>
 
@@ -186,7 +183,6 @@
 
         var long = piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
           exif["GPS"][piexif.GPSIFD.GPSLongitudeRef]);
-
         // get reverse geocode lookup
         // example reverse GeoCode test
         // var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20-0.09%2C51.505.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true';
@@ -200,7 +196,6 @@
         // bind popup information to sign-image marker
         newSign.bindPopup("<div class ='sign_popup' style = 'width:302px;'><h1>" + signName + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src =" + url +
           "></div> <p>Seen on " + newPrettyDate + ", " + newPrettyTime + "<br/>Recorded with " + make + " " + model + ". ");
-        //console.log(  newSign._popup._content ) ;
 
         newSign.on('mouseover', function(e) {
           this.openPopup();
@@ -227,7 +222,6 @@
           console.log("parsed JSON " + myLocality.features[2].place_name);
           locality = myLocality.features[2].place_name;
           var content = sign._popup._content;
-
           sign._popup._content = content + locality + "</p></div>";
         }
       }
