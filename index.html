@@ -135,8 +135,6 @@
           ".json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true";
         //console.log("returned geodata " +  httpGetAsync(geocodeDataUrl));
 
-
-
         // create new image-sign marker for map
         var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
           exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true);
@@ -144,6 +142,14 @@
         newSign.bindPopup("<div class ='sign_popup' style = 'width:302px;'><h1>" + signName + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src =" + url +
           "></div> <p>Seen on " + newPrettyDate + ", " + newPrettyTime + "<br/>Recorded with " + make + " " + model + ". ");
         //console.log(  newSign._popup._content ) ;
+
+        newSign.on('mouseover', function (e) {
+           this.openPopup();
+       });
+       newSign.on('mouseout', function (e) {
+           this.closePopup();
+       });
+
         markers.addLayer(newSign);
         var locality = httpGetAsync(geocodeDataUrl, newSign);
         signsLoaded += 1; // update number of signs loaded to map
