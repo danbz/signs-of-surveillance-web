@@ -10,26 +10,30 @@ h1#hero-title {
   font-weight: bolder;
   margin-bottom: 0;
   padding: 0;
+    color: #fff;
 }
 
 h2#sub-title {
   font-size: 90%;
   margin-bottom: 0;
   padding: 0;
+  color: #fff;
 }
 
 p#loading-notice {
   font-size: 50%;
   padding: 0;
   margin: 0;
+  color: #fff;
 }
 
 /* title box */
 .info {
   padding: 6px 8px;
+  color:fff;
   font: 14px/16px Arial, Helvetica, sans-serif;
-  background: white;
-  background: rgba(255, 255, 255, 0.7);
+  background: black;
+  background: rgba(50, 50, 50, 0.7);
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
   border-radius: 5px;
 }

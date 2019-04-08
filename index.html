@@ -135,6 +135,11 @@
       var long = piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
         exif["GPS"][piexif.GPSIFD.GPSLongitudeRef]);
       document.getElementById("currentSign").innerHTML = currentMarker;
+
+      // calculate distance to new latlong posiiton
+      // var distance = myMap.getCenter().distanceTo([lat, long]); // distance in meters
+      // flyAnimationLength = distance / 10000 ;
+      // console.log("distance to " + distance);
       myMap.flyTo([lat, long], flyMaxZoom, {
         duration: flyAnimationLength
       });
@@ -194,8 +199,8 @@
         var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
           exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true);
         // bind popup information to sign-image marker
-        newSign.bindPopup("<div class ='sign_popup' style = 'width:302px;'><h1>" + signName + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src =" + url +
-          "></div> <p>Seen on " + newPrettyDate + ", " + newPrettyTime + "<br/>Recorded with " + make + " " + model + ". ");
+        newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ", " + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src =" + url +
+          "></div> <p>Recorded with " + make + " " + model + ". ");
 
         newSign.on('mouseover', function(e) {
           this.openPopup();
