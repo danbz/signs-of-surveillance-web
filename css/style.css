@@ -83,8 +83,8 @@ div.sign_popup {
 }
 
 .sign_popup_inner {
-  padding: 50% 0;
-  height: 0;
+  padding: 50% 0 0 0;
+  /*height: 0;*/
 }
 
 /* rotation of images */
