@@ -48,9 +48,9 @@
     var signsLoaded = 0; // initialise count of loaded sign-images
     var b_traversingMarkers = false;
     var currentMarker = 0;
-    var delayMilli = 10000; // delay between flyto marker animation events occurring
-    var openMarkerDelay = 4000; // delay time on auto popup open and close
-    var closeMarkerDelay = 9000; // delay time on auto popup open and close
+    var delayMilli = 14000; // delay between flyto marker animation events occurring
+    var openMarkerDelay = 6000; // delay time on auto popup open and close
+    var closeMarkerDelay = 13000; // delay time on auto popup open and close
     var flyAnimationLength = 8; // time in seconds for flyto marker animation
     var flyMaxZoom = 18;
     var markersList = []; // array of all markers added to clustering _layer
@@ -87,7 +87,8 @@
 
     // method that we will use to update the control based on feature properties passed
     info.update = function(props) { // populate info map control layer
-      this._div.innerHTML = "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of <span id='signMax'>0</span>. Viewing sign <span id='currentSign'>0</span><form><div class='toggles'><input type='checkbox' name='styled' id='styled' onclick='traverseMarkers()'><label for='styled'>Traverse Markers</label></div></form></p>"
+      this._div.innerHTML =
+        "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of <span id='signMax'>0</span>. Viewing sign <span id='currentSign'>0</span><form><div class='toggles'><input type='checkbox' name='styled' id='styled' onclick='traverseMarkers()'><label for='styled'>Traverse Markers</label></div></form></p>"
     };
     info.addTo(myMap); // add info layer to map
 
@@ -100,11 +101,11 @@
 
     // to setup signs as custom icons in an array of markers
     function addSigns() {
-    maxSigns =   myFileNames.length;
-    document.getElementById("signMax").innerHTML = maxSigns;
+      maxSigns = myFileNames.length;
+      document.getElementById("signMax").innerHTML = maxSigns;
 
       for (i = 0; i < maxSigns; i++) {
-      //  var imagePath = "./signs/sign" + i + ".jpg";
+        //  var imagePath = "./signs/sign" + i + ".jpg";
         var imagePath = myFileNames[i];
         convertFileToBase64viaFileReader(imagePath); // previous routine to load via piexif.js
       }
@@ -114,8 +115,8 @@
     // traverse map from marker to marker in array
     function traverseMarkers() {
       b_traversingMarkers = !b_traversingMarkers;
-    //  currentMarker = 0;
-    //  document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
+      //  currentMarker = 0;
+      //  document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
       document.getElementById("currentSign").innerHTML = currentMarker;
       if (b_traversingMarkers) {
         interval = setInterval(incrementTraverse, delayMilli);
@@ -139,9 +140,13 @@
       document.getElementById("currentSign").innerHTML = currentMarker;
 
       // calculate distance to new latlong posiiton
-      // var distance = myMap.getCenter().distanceTo([lat, long]); // distance in meters
-      // flyAnimationLength = distance / 10000 ;
-      // console.log("distance to " + distance);
+      var distance = myMap.getCenter().distanceTo([lat, long]); // distance in meters
+      if (distance > 100000) {
+        flyAnimationLength = 12;
+      } else {
+        flyAnimationLength = 8;
+      }
+      //console.log("distance to " + distance);
       myMap.flyTo([lat, long], flyMaxZoom, {
         duration: flyAnimationLength
       });
@@ -175,7 +180,7 @@
         myExif.push(exif); // push exif data into array of exif data
         var strLength = url.length; // extract sign-image name
         //var signName = url.substr(8, strLength - 8);
-        console.log("loaded " . url );
+        console.log("loaded ".url);
         // extract EXIF data in preparation for building sign-image popup marker
         var dateStamp = exif["0th"][piexif.ImageIFD.DateTime];
         var prettyDate = dateStamp.substr(0, 10);
@@ -203,12 +208,12 @@
         // bind popup information to sign-image marker
         newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ", " + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url +
           "'></div> <p>Recorded with " + make + " " + model + ". ");
-          console.log("url for images "+ url);
+        console.log("url for images " + url);
         newSign.on('mouseover', function(e) {
           this.openPopup();
         });
         newSign.on('mouseout', function(e) {
-          //this.closePopup();
+          this.closePopup();
         });
         markersList.push(newSign);
         markers.addLayer(newSign);

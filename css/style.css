@@ -193,11 +193,12 @@ form > div + div {
   padding: 0.5em;
   padding-left: 4em;
   max-width: calc(100% - 2em);
+  color:#fff;
 }
 
 .toggles [type="checkbox"]:focus + label,
 .toggles [type="checkbox"]:hover + label {
-  color: #00f;
+  color: #fff;
 }
 
 .toggles [type="checkbox"]:focus + label::before,
