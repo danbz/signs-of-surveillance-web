@@ -97,3 +97,5 @@ typings/
 
 # Build files
 files.json
+.cache
+dist

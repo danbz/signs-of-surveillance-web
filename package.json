@@ -6,8 +6,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "files-json": "node ./scripts/generateFilesJSON.js",
-    "deploy": "npm run files-json && gh-pages .",
-    "start": "npm run files-json && http-server"
+    "deploy": "npm run files-json && gh-pages -d dist",
+    "start": "npm run files-json && parcel -p 8080 lib/index.html"
   },
   "repository": {
     "type": "git",
@@ -21,6 +21,11 @@
   "homepage": "https://github.com/LucianBuzzo/signs-of-surveillance-web#readme",
   "devDependencies": {
     "gh-pages": "^2.0.1",
-    "http-server": "^0.11.1"
+    "parcel-bundler": "^1.12.3"
+  },
+  "dependencies": {
+    "blueimp-load-image": "^2.21.0",
+    "js": "^0.1.0",
+    "piexifjs": "^1.0.4"
   }
 }
