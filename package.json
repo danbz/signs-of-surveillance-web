@@ -1,0 +1,26 @@
+{
+  "name": "signs-of-surveillance-web",
+  "version": "1.0.0",
+  "description": "web based implementation of SignsOfSurveillance mapping project",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "files-json": "node ./scripts/generateFilesJSON.js",
+    "deploy": "npm run files-json && gh-pages .",
+    "start": "npm run files-json && http-server"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LucianBuzzo/signs-of-surveillance-web.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LucianBuzzo/signs-of-surveillance-web/issues"
+  },
+  "homepage": "https://github.com/LucianBuzzo/signs-of-surveillance-web#readme",
+  "devDependencies": {
+    "gh-pages": "^2.0.1",
+    "http-server": "^0.11.1"
+  }
+}

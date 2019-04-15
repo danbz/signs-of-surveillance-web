@@ -7,9 +7,9 @@ function getImageFileNames() {
       console.log ("returned server filenames " + this.responseText);
       myFileNames = JSON.parse(this.responseText);
       addSigns();
-    
+
     }
   };
-  xmlhttp.open("GET", "getNumofFiles.php", true);
+  xmlhttp.open("GET", "files.json", true);
   xmlhttp.send();
 }
