@@ -168,7 +168,7 @@ function loadExif(dataURL, url) {
       this.openPopup()
     })
     newSign.on('mouseout', function(e) {
-      this.closePopup()
+      // this.closePopup()
     })
     markersList.push(newSign)
     markers.addLayer(newSign)

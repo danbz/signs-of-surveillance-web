@@ -48,15 +48,7 @@ p#loading-notice {
   height: 100vh;
 }
 
-.leaflet-popup-content-wrapper {
-  overflow: auto;
-  display: table;
-  with
-}
 
-div.sign_popup {
-  display: table;
-}
 
 /* sign styling */
 .sign_popup h1, .sign_grid h1 {
@@ -69,22 +61,29 @@ div.sign_popup {
   margin-block-end: 0.1em;
 }
 
+.leaflet-popup-content-wrapper {
+
+}
+
+div.sign_popup {
+  display: table;
+}
+
+.sign_popup_inner {
+  padding: 50% 0;
+  height: 0;
+}
 .sign_popup img {
-   width: 302px;
+  width: 302px;
   display: block;
   transform-origin: top left;
   /* Note: for a CLOCKWISE rotation, use the commented-out
     transform instead of this one. */
   /* transform: rotate(90deg) translate(0, -100%); */
-  margin-left: auto;
-  margin-right: auto;
+  /* margin-left: auto;
+  margin-right: auto; */
   margin-top: -50%;
-  align: center;
-}
-
-.sign_popup_inner {
-  padding: 50% 0 0 0;
-  /*height: 0;*/
+  white-space: nowrap;
 }
 
 /* rotation of images */
@@ -92,6 +91,7 @@ img.orientation_8 {
   transform: rotate(-90deg) translate(-100%);
   -webkit-transform: rotate(-90deg) translate(-100%);
   -ms-transform: rotate(-90deg) translate(-100%);
+  height:302px;
 }
 
 img.orientation_3 {
@@ -104,6 +104,7 @@ img.orientation_6 {
   transform: rotate(90deg) translate(0, -100%);
   -webkit-transform: rotate(90deg) translate(0, -100%);
   -ms-transform: rotate(90deg) translate(0, -100%);
+  height:302px;
 }
 
 /* grid styling */
