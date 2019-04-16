@@ -8,7 +8,8 @@ var myExif = [] // array of EXIF data for loaded sign-images
 var signsLoaded = 0 // initialise count of loaded sign-images
 var b_traversingMarkers = false // boolean to track if we are traversing markers
 var currentMarker = 0
-var delayMilli = 14000 // delay between flyto marker animation events occurring  var openMarkerDelay = 6000 // delay time on auto popup open and close
+var delayMilli = 14000 // delay between flyto marker animation events occurring
+var openMarkerDelay = 6000 // delay time on auto popup open and close
 var closeMarkerDelay = 13000 // delay time on auto popup open and close
 var flyAnimationLength = 8 // time in seconds for flyto marker animation
 var flyMaxZoom = 18
