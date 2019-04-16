@@ -14,14 +14,3 @@ dependencies
  * Javascript load image library https://github.com/blueimp/JavaScript-Load-Image
 
 ![screenshot](screenshot.png)
-
-## Developing
-
-Clone this repository and run the following commands:
-
-```
-npm install
-npm start
-```
-
-The map will now be available at http://localhost:8080/
