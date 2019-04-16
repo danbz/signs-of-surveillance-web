@@ -74,7 +74,8 @@ div.sign_popup {
   height: 0;
 }
 .sign_popup img {
-  width: 302px;
+  max-width: 302px;
+  max-height: 302px;
   display: block;
   transform-origin: top left;
   /* Note: for a CLOCKWISE rotation, use the commented-out
