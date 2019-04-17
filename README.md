@@ -14,3 +14,5 @@ dependencies
  * Javascript load image library https://github.com/blueimp/JavaScript-Load-Image
 
 ![screenshot](screenshot.png)
+
+* development-osm branch to switch from mapbox to openstreetmap for tile serving and reverse geo-coding
