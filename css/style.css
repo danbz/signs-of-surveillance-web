@@ -88,6 +88,13 @@ div.sign_popup {
 }
 
 /* rotation of images */
+
+img.orientation_1 {
+  transform: rotate(360deg) translate(-0%);
+  -webkit-transform: rotate(360deg) translate(-0%);
+  -ms-transform: rotate(360deg) translate(-0%);
+  height:302px;
+}
 img.orientation_8 {
   transform: rotate(-90deg) translate(-100%);
   -webkit-transform: rotate(-90deg) translate(-100%);

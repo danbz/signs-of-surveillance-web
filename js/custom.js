@@ -24,6 +24,7 @@ window.onload = function () {
 var myMap = L.map('mapid').setView([51.505, -0.09], 5) // generate map gentred on LONDON
 // var myMap = L.map('mapid').setView([52.379, 4.899], 5); // generate map gentred on AMSTERDAM
 // var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ"; // mapbox access token
+
 L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
   maxZoom: 20,
@@ -101,26 +102,30 @@ function incrementTraverse () {
   // calculate distance to new latlong posiiton
   var distance = myMap.getCenter().distanceTo([lat, long]) // distance in meters
   if (distance > 100000) {
+  //  myMap.easeTo({ bearing: 90, duration: 5000, pitch: 40 })
     flyAnimationLength = 12
   } else {
     flyAnimationLength = 8
+  //  myMap.easeTo({ bearing: 0, duration: 5000, pitch: 0 })
   }
   // console.log("distance to " + distance);
   myMap.flyTo([lat, long], flyMaxZoom, {
+    // bearing: 90,
+    // pitch: 40,
     duration: flyAnimationLength
   })
   setTimeout(openPopupMarker, openMarkerDelay)
   setTimeout(removePopupMarker, closeMarkerDelay)
 }
 
-function openPopupMarker() {
+function openPopupMarker () {
   var m = markersList[currentMarker]
   markers.removeLayer(m)
   m.addTo(myMap)
   m.openPopup()
 }
 
-function removePopupMarker() {
+function removePopupMarker () {
   var m = markersList[currentMarker]
   myMap.removeLayer(m)
   markers.addLayer(m)
@@ -155,9 +160,10 @@ function loadExif(dataURL, url) {
     // get reverse geocode lookup
     // example reverse GeoCode test
     // var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20-0.09%2C51.505.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true';
-    var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20' + long + '%2C' + lat +
-        '.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true'
-    // console.log("returned geodata " +  httpGetAsync(geocodeDataUrl));
+    
+    //var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20' + long + '%2C' + lat + '.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true'
+    var geocodeDataUrl = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat +'&lon='+ long
+        // console.log("returned geodata " +  httpGetAsync(geocodeDataUrl));
     // create new image-sign marker for map
     var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
       exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true)
@@ -188,7 +194,8 @@ function httpGetAsync (theUrl, sign) {
       var jsonText = xmlHttp.responseText
       myLocality = JSON.parse(jsonText)
       // console.log("parsed JSON " + myLocality.features[2].place_name);
-      locality = myLocality.features[2].place_name
+      // locality = myLocality.features[2].place_name // mapbox reversegeo structure
+      locality = myLocality.display_name // osm reversegeo structure 
       var content = sign._popup._content
       sign._popup._content = content + locality + '</p></div>'
     }
