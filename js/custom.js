@@ -3,6 +3,7 @@
 
 var maxSigns = 0 // number of sign-images to load
 var myFileNames = []
+var myGeoData = []
 var mySigns = [] // array of sign-image names
 var myExif = [] // array of EXIF data for loaded sign-images
 var signsLoaded = 0 // initialise count of loaded sign-images
@@ -17,7 +18,7 @@ var markersList = [] // array of all markers added to clustering _layer
 // myFileNames = getImageFileNames();
 
 window.onload = function () {
-  getImageFileNames ()
+  getImageFileNames()
   //  addSigns() // add all the signs to the map
 }
 
@@ -40,10 +41,10 @@ L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={
 
 // add info to the map
 var info = L.control() // new leaflet map control layer
-info.onAdd = function(myMap) {
-  this._div = L.DomUtil.create('div', 'info'); // create a div with a class "info"
-  this.update();
-  return this._div;
+info.onAdd = function (myMap) {
+  this._div = L.DomUtil.create('div', 'info') // create a div with a class "info"
+  this.update()
+  return this._div
 }
 
 // method that we will use to update the control based on feature properties passed
@@ -51,6 +52,7 @@ info.update = function (props) { // populate info map control layer
   this._div.innerHTML =
       "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of <span id='signMax'>0</span>. Viewing sign <span id='currentSign'>0</span><form><div class='toggles'><input type='checkbox' name='styled' id='styled' onclick='traverseMarkers()'><label for='styled'>Traverse Markers</label></div></form></p>"
 }
+
 info.addTo(myMap) // add info layer to map
 
 // make clustering group for markers
@@ -64,7 +66,6 @@ var markers = L.markerClusterGroup({
 function addSigns () {
   maxSigns = myFileNames.length
   document.getElementById('signMax').innerHTML = maxSigns
-
   for (i = 0; i < maxSigns; i++) {
     var imagePath = myFileNames[i]
     convertFileToBase64viaFileReader(imagePath) // previous routine to load via piexif.js
@@ -79,7 +80,7 @@ function traverseMarkers () {
   //  document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
   document.getElementById('currentSign').innerHTML = currentMarker
   if (b_traversingMarkers) {
-    interval = setInterval (incrementTraverse, delayMilli);
+    interval = setInterval(incrementTraverse, delayMilli)
     incrementTraverse()
   } else {
     clearInterval(interval)
@@ -132,19 +133,19 @@ function removePopupMarker () {
 }
 
 // load and extract EXIF data from supplied image url string and URLdatablob
-function loadExif(dataURL, url) {
+function loadExif (dataURL, url) {
   var originalImg = new Image()
   originalImg.src = dataURL
   var exif = piexif.load(dataURL)
   originalImg.onload = function () {
-    /////////// requested image now loaded ///////////
+    /// //////// requested image now loaded ///////////
     mySigns.push(url) // push image name into array
     myExif.push(exif) // push exif data into array of exif data
     // var strLength = url.length // extract sign-image name
     // var signName = url.substr(8, strLength - 8);
-    console.log('loaded ' .url)
+    console.log('loaded ' + url)
     // extract EXIF data in preparation for building sign-image popup marker
-    var dateStamp = exif["0th"][piexif.ImageIFD.DateTime]
+    var dateStamp = exif['0th'][piexif.ImageIFD.DateTime]
     var prettyDate = dateStamp.substr(0, 10)
     var prettyTime = dateStamp.substr(11, 8)
     var prettyDate = prettyDate.replace(/:/g, '/')
@@ -153,56 +154,66 @@ function loadExif(dataURL, url) {
     var make = exif['0th'][piexif.ImageIFD.Make]
     var model = exif['0th'][piexif.ImageIFD.Model]
     var orientation = exif['0th'][piexif.ImageIFD.Orientation]
-    var lat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif["GPS"][piexif.GPSIFD.GPSLatitudeRef])
-
+    var lat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
     var long = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
-      exif["GPS"][piexif.GPSIFD.GPSLongitudeRef])
+      exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
+    var locality = 'unknown place'
     // get reverse geocode lookup
-    // example reverse GeoCode test
-    // var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20-0.09%2C51.505.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true';
-    
-    //var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20' + long + '%2C' + lat + '.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true'
-    var geocodeDataUrl = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat +'&lon='+ long
-        // console.log("returned geodata " +  httpGetAsync(geocodeDataUrl));
+    // var geocodeDataUrl = 'https://api.mapbox.com/geocoding/v5/mapbox.places/%20' + long + '%2C' + lat + '.json?access_token=pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ&cachebuster=1554397643233&autocomplete=true'
+    // var geocodeDataUrl = 'https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=' + lat +'&lon='+ long
+
+    // find locality data from geojson file for current sign
+    for (s = 0; s < maxSigns; s++) {
+      // console.log ('geoData url: ' + myGeoData.features[s].properties.url + ' sign url ' + url)
+      var myGeoUrl = 'signs/' + myGeoData.features[s].properties.url
+      if (myGeoUrl === url) {
+        locality = myGeoData.features[s].properties.locality // osm reversegeo structure
+        console.log('s = ' + s + ' myGeoUrl = ' + myGeoUrl + ' my sign url = ' + url + ' my locality info = ' + locality)
+        s = maxSigns
+      }
+    }
+
     // create new image-sign marker for map
-    var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif["GPS"][piexif.GPSIFD.GPSLongitude],
+    var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
       exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true)
     // bind popup information to sign-image marker
-    newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ", " + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url +
-        "'></div> <p>Recorded with " + make + " " + model + ". ")
-    console.log('url for images ' + url)
-    newSign.on('mouseover', function(e) {
+    
+    newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url +
+        "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
+    
+    newSign.on('mouseover', function (e) {
       this.openPopup()
     })
-    newSign.on('mouseout', function(e) {
+    
+    newSign.on('mouseout', function (e) {
       // this.closePopup()
     })
     markersList.push(newSign)
     markers.addLayer(newSign)
-    var locality = httpGetAsync(geocodeDataUrl, newSign)
+    // var locality = httpGetAsync(geocodeDataUrl, newSign) // stop doing geocoding for the time being while moving to JSON file based
     signsLoaded += 1 // update number of signs loaded to map
     document.getElementById('signTotal').innerHTML = signsLoaded
   }
 }
 
-// get geocode data
-function httpGetAsync (theUrl, sign) {
-  var xmlHttp = new XMLHttpRequest()
-  xmlHttp.onreadystatechange = function() {
-    if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-    // console.log(xmlHttp.responseText);
-      var jsonText = xmlHttp.responseText
-      myLocality = JSON.parse(jsonText)
-      // console.log("parsed JSON " + myLocality.features[2].place_name);
-      // locality = myLocality.features[2].place_name // mapbox reversegeo structure
-      locality = myLocality.display_name // osm reversegeo structure 
-      var content = sign._popup._content
-      sign._popup._content = content + locality + '</p></div>'
-    }
-  }
-  xmlHttp.open('GET', theUrl, true) // true for asynchronous
-  xmlHttp.send(null)
-}
+// // get geocode data
+// function httpGetAsync (theUrl, sign) {
+//   var xmlHttp = new XMLHttpRequest()
+//   xmlHttp.onreadystatechange = function () {
+//     if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
+//     // console.log(xmlHttp.responseText);
+//       var jsonText = xmlHttp.responseText
+//       myLocality = JSON.parse(jsonText)
+//       // console.log("parsed JSON " + myLocality.features[2].place_name);
+//       // locality = myLocality.features[2].place_name // mapbox reversegeo structure
+//       locality = myLocality.display_name // osm reversegeo structure
+//       var content = sign._popup._content
+//       sign._popup._content = content + locality + '</p></div>'
+//     }
+//   }
+//   xmlHttp.open('GET', theUrl, true) // true for asynchronous
+//   xmlHttp.send(null)
+// }
 
 // convert filename to base64 dataURL Blob
 function convertFileToBase64viaFileReader (url) {
@@ -220,16 +231,31 @@ function convertFileToBase64viaFileReader (url) {
 }
 
 function getImageFileNames () {
-  // request filenames of images from php file on server
+  // request filenames of images from pre-built JSON file on server
   var xmlhttp = new XMLHttpRequest()
   xmlhttp.onreadystatechange = function () {
     if (this.readyState === 4 && this.status === 200) {
-    //  document.getElementById("txtHint").innerHTML = this.responseText;
       console.log('returned server filenames ' + this.responseText)
       myFileNames = JSON.parse(this.responseText)
+      getImageGeoData()
+    }
+  }
+  // xmlhttp.open('GET', 'getNumofFiles.php', true)
+  xmlhttp.open('GET', 'data/files.json', true)
+  xmlhttp.send()
+}
+
+function getImageGeoData () {
+  // request geocode date of images from pre-built JSON file on server
+  var xmlhttp = new XMLHttpRequest()
+  xmlhttp.onreadystatechange = function () {
+    if (this.readyState === 4 && this.status === 200) {
+      console.log('returned server localities ' + this.responseText)
+      myGeoData = JSON.parse(this.responseText)
+      console.log('url features 0 url : ' + myGeoData.features[0].properties.url + myGeoData.features[0].properties.locality)
       addSigns()
     }
   }
-  xmlhttp.open('GET', 'getNumofFiles.php', true)
+  xmlhttp.open('GET', 'data/all-signs.geojson', true)
   xmlhttp.send()
 }
