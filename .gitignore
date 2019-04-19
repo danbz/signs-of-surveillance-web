@@ -7,7 +7,7 @@
 .DS_Store
 .AppleDouble
 .LSOverride
-.code-workspace
+*.code-workspace
 
 # Icon must end with two \r
 Icon
