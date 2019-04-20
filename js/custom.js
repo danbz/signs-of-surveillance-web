@@ -1,4 +1,3 @@
-
 // global variables
 
 var maxSigns = 0 // number of sign-images to load
@@ -18,7 +17,7 @@ var markersList = [] // array of all markers added to clustering _layer
 // myFileNames = getImageFileNames();
 
 window.onload = function () {
-  getImageFileNames()
+  getImageGeoData()
   //  addSigns() // add all the signs to the map
 }
 
@@ -47,16 +46,16 @@ info.onAdd = function (myMap) {
   return this._div
 }
 
-// method that we will use to update the control based on feature properties passed
 info.update = function (props) { // populate info map control layer
+  // method that we will use to update the control based on feature properties passed
   this._div.innerHTML =
       "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of <span id='signMax'>0</span>. Viewing sign <span id='currentSign'>0</span><form><div class='toggles'><input type='checkbox' name='styled' id='styled' onclick='traverseMarkers()'><label for='styled'>Traverse Markers</label></div></form></p>"
 }
 
 info.addTo(myMap) // add info layer to map
 
-// make clustering group for markers
 var markers = L.markerClusterGroup({
+  // make clustering group for markers
   maxClusterRadius: 25,
   spiderfyOnMaxZoom: false,
   disableClusteringAtZoom: 16
@@ -64,17 +63,19 @@ var markers = L.markerClusterGroup({
 
 // to setup signs as custom icons in an array of markers
 function addSigns () {
-  maxSigns = myFileNames.length
+  // maxSigns = myFileNames.length
+  maxSigns = myGeoData.features.length
+  console.log('maxsigns = ' + maxSigns)
   document.getElementById('signMax').innerHTML = maxSigns
   for (i = 0; i < maxSigns; i++) {
-    var imagePath = myFileNames[i]
+    var imagePath = 'signs/' + myGeoData.features[i].properties.url
     convertFileToBase64viaFileReader(imagePath) // previous routine to load via piexif.js
   }
   myMap.addLayer(markers) // add marker layer
 }
 
-// traverse map from marker to marker in array
 function traverseMarkers () {
+  // traverse map from marker to marker in array
   b_traversingMarkers = !b_traversingMarkers
   //  currentMarker = 0;
   //  document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
@@ -132,8 +133,8 @@ function removePopupMarker () {
   markers.addLayer(m)
 }
 
-// load and extract EXIF data from supplied image url string and URLdatablob
 function loadExif (dataURL, url) {
+  // load and extract EXIF data from supplied image url string and URLdatablob
   var originalImg = new Image()
   originalImg.src = dataURL
   var exif = piexif.load(dataURL)
@@ -164,7 +165,7 @@ function loadExif (dataURL, url) {
 
     // find locality data from geojson file for current sign
     for (s = 0; s < maxSigns; s++) {
-      // console.log ('geoData url: ' + myGeoData.features[s].properties.url + ' sign url ' + url)
+      console.log ('geoData url: ' + myGeoData.features[s].properties.url + ' sign url ' + url)
       var myGeoUrl = 'signs/' + myGeoData.features[s].properties.url
       if (myGeoUrl === url) {
         locality = myGeoData.features[s].properties.locality // osm reversegeo structure
@@ -215,8 +216,8 @@ function loadExif (dataURL, url) {
 //   xmlHttp.send(null)
 // }
 
-// convert filename to base64 dataURL Blob
 function convertFileToBase64viaFileReader (url) {
+  // convert filename to base64 dataURL Blob
   var xhr = new XMLHttpRequest()
   xhr.responseType = 'blob'
   xhr.onload = function () {
@@ -230,29 +231,28 @@ function convertFileToBase64viaFileReader (url) {
   xhr.send()
 }
 
-function getImageFileNames () {
-  // request filenames of images from pre-built JSON file on server
-  var xmlhttp = new XMLHttpRequest()
-  xmlhttp.onreadystatechange = function () {
-    if (this.readyState === 4 && this.status === 200) {
-      console.log('returned server filenames ' + this.responseText)
-      myFileNames = JSON.parse(this.responseText)
-      getImageGeoData()
-    }
-  }
-  // xmlhttp.open('GET', 'getNumofFiles.php', true)
-  xmlhttp.open('GET', 'data/files.json', true)
-  xmlhttp.send()
-}
+// function getImageFileNames () {
+//   // request filenames of images from pre-built JSON file on server
+//   var xmlhttp = new XMLHttpRequest()
+//   xmlhttp.onreadystatechange = function () {
+//     if (this.readyState === 4 && this.status === 200) {
+//       console.log('returned server filenames ' + this.responseText)
+//       myFileNames = JSON.parse(this.responseText)
+//       getImageGeoData()
+//     }
+//   }
+//   // xmlhttp.open('GET', 'getNumofFiles.php', true)
+//   xmlhttp.open('GET', 'data/files.json', true)
+//   xmlhttp.send()
+// }
 
 function getImageGeoData () {
   // request geocode date of images from pre-built JSON file on server
   var xmlhttp = new XMLHttpRequest()
   xmlhttp.onreadystatechange = function () {
     if (this.readyState === 4 && this.status === 200) {
-      console.log('returned server localities ' + this.responseText)
+      // console.log('returned server localities ' + this.responseText)
       myGeoData = JSON.parse(this.responseText)
-      console.log('url features 0 url : ' + myGeoData.features[0].properties.url + myGeoData.features[0].properties.locality)
       addSigns()
     }
   }
