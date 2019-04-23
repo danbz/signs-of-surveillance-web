@@ -165,7 +165,6 @@ function loadExif (dataURL, url) {
 
     // find locality data from geojson file for current sign
     for (s = 0; s < maxSigns; s++) {
-      console.log ('geoData url: ' + myGeoData.features[s].properties.url + ' sign url ' + url)
       var myGeoUrl = 'signs/' + myGeoData.features[s].properties.url
       if (myGeoUrl === url) {
         locality = myGeoData.features[s].properties.locality // osm reversegeo structure
@@ -178,14 +177,14 @@ function loadExif (dataURL, url) {
     var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
       exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true)
     // bind popup information to sign-image marker
-    
+
     newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url +
         "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
-    
+
     newSign.on('mouseover', function (e) {
       this.openPopup()
     })
-    
+
     newSign.on('mouseout', function (e) {
       // this.closePopup()
     })
