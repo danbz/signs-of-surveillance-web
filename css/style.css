@@ -43,9 +43,27 @@ p#loading-notice {
   color: #777;
 }
 
+#fly, #rotate {
+  display: block;
+  position: relative;
+  margin: 1px auto;
+  width: 10%;
+  height: 40px;
+  padding: 10px;
+  border: none;
+  border-radius: 3px;
+  font-size: 12px;
+  text-align: center;
+  color: #fff;
+  background: #ee8a65;
+}
+
 /* mapstyling */
-#mapid {
-  height: 100vh;
+
+#mapid { 
+  position:absolute; top:0; bottom:0; 
+  width:100%; 
+  height: 100%;
 }
 
 .mapboxgl-popup-content {

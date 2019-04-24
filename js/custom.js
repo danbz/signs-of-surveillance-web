@@ -11,13 +11,15 @@ var currentMarker = 0
 var delayMilli = 14000 // delay between flyto marker animation events occurring
 var openMarkerDelay = 6000 // delay time on auto popup open and close
 var closeMarkerDelay = 13000 // delay time on auto popup open and close
-var flyAnimationLength = 8 // time in seconds for flyto marker animation
+var flyAnimationLength = 0.6 // speed for flyto marker animation
 var flyMaxZoom = 18
+var b_rotate = false
 var markersList = [] // array of all markers added to clustering _layer
 // myFileNames = getImageFileNames();
 
 window.onload = function () {
   getImageGeoData()
+
   //  addSigns() // add all the signs to the map
 }
 
@@ -32,7 +34,7 @@ var myMap = new mapboxgl.Map({
   // style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
   // style: 'mapbox://styles/mapbox/light-v10',
   center: [ -0.09, 51.505 ], // starting position [lng, lat]
-  zoom: 18, // starting zoom
+  zoom: 15, // starting zoom
   maxZoom: 20,
   minZoom: 3,
   pitch: 60
@@ -110,42 +112,65 @@ function incrementTraverse () {
   } else {
     currentMarker += 1
   }
-  var exif = myExif[currentMarker]
-  var lat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
-  var long = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
-    exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
+  // var exif = myExif[currentMarker]
+  // var lat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
+  // var long = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
+  //   exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
   // document.getElementById('currentSign').innerHTML = currentMarker
 
+  var lat = myGeoData.features[currentMarker].geometry.coordinates[0];
+  var long = myGeoData.features[currentMarker].geometry.coordinates[1];
   // calculate distance to new latlong posiiton
-  var distance = myMap.getCenter().distanceTo([lat, long]) // distance in meters
-  if (distance > 100000) {
-  //  myMap.easeTo({ bearing: 90, duration: 5000, pitch: 40 })
-    flyAnimationLength = 12
-  } else {
-    flyAnimationLength = 8
-  //  myMap.easeTo({ bearing: 0, duration: 5000, pitch: 0 })
-  }
-  // console.log("distance to " + distance);
-  myMap.flyTo([lat, long], flyMaxZoom, {
+  // var distance = myMap.getCenter().distanceTo([lat, long]) // distance in meters
+  // if (distance > 100000) {
+  // //  myMap.easeTo({ bearing: 90, duration: 5000, pitch: 40 })
+  //   flyAnimationLength = 12
+  // } else {
+  //   flyAnimationLength = 8
+  // //  myMap.easeTo({ bearing: 0, duration: 5000, pitch: 0 })
+  // }
+  console.log(' flying to ' + lat + ', ' + long);
+  myMap.flyTo({
+    center: [lat, long], 
+    zoom: flyMaxZoom, 
     // bearing: 90,
-    // pitch: 40,
-    duration: flyAnimationLength
+    // pitch: 60,
+    speed: flyAnimationLength,
+    curve: 1
   })
   setTimeout(openPopupMarker, openMarkerDelay)
   setTimeout(removePopupMarker, closeMarkerDelay)
 }
 
+// Create a popup, but don't add it to the map yet.
+var popup = new mapboxgl.Popup({
+  closeButton: false,
+  closeOnClick: false
+});
+
 function openPopupMarker () {
-  var m = markersList[currentMarker]
-  markers.removeLayer(m)
-  m.addTo(myMap)
-  m.openPopup()
+  var coordinates = myGeoData.features[currentMarker].geometry.coordinates.slice();
+  var locality = myGeoData.features[currentMarker].properties.locality;
+  var url = 'signs/' + myGeoData.features[currentMarker].properties.url;
+  var make = myGeoData.features[currentMarker].properties.make;
+  var model = myGeoData.features[currentMarker].properties.model;
+  var orientation = myGeoData.features[currentMarker].properties.orientation;
+
+  var dateStamp = myGeoData.features[currentMarker].properties.date;
+  var prettyDate = dateStamp.substr(0, 10)
+  var prettyTime = dateStamp.substr(11, 8)
+  var prettyDate = prettyDate.replace(/:/g, '/')
+  var newPrettyDate = Date.parse(prettyDate).toString('MMMM dS, yyyy')
+  var newPrettyTime = Date.parse(prettyTime).toString('HH:mm tt')
+
+  popup
+    .setLngLat(coordinates)
+    .setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
+    .addTo(myMap);
 }
 
 function removePopupMarker () {
-  var m = markersList[currentMarker]
-  myMap.removeLayer(m)
-  markers.addLayer(m)
+  popup.remove();
 }
 
 function loadExif (dataURL, url) {
@@ -265,6 +290,8 @@ function getImageGeoData () {
       // console.log('returned server localities ' + this.responseText)
       myGeoData = JSON.parse(this.responseText)
       // addSigns()
+      maxSigns = myGeoData.features.length
+      console.log('maxsigns = ' + maxSigns)
     }
   }
   xmlhttp.open('GET', 'data/all-signs.geojson', true)
@@ -339,6 +366,8 @@ myMap.on('load', function () {
     }
   });
 
+
+
   myMap.on('click', 'unclustered-point', function (e) {   
     // create and populate a popup on click
     var coordinates = e.features[0].geometry.coordinates.slice();
@@ -355,12 +384,42 @@ myMap.on('load', function () {
     var newPrettyDate = Date.parse(prettyDate).toString('MMMM dS, yyyy')
     var newPrettyTime = Date.parse(prettyTime).toString('HH:mm tt')
 
-    new mapboxgl.Popup()
+    popup
       .setLngLat(coordinates)
       //.setHTML(description)
       .setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
       .addTo(myMap);
 
+  });
+
+  myMap.on('mouseenter', 'unclustered-point', function(e) {
+    // Change the cursor style as a UI indicator.
+    myMap.getCanvas().style.cursor = 'pointer';
+
+    // create and populate a popup on hover
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var locality = e.features[0].properties.locality;
+    var url = 'signs/' + e.features[0].properties.url;
+    var make = e.features[0].properties.make;
+    var model = e.features[0].properties.model;
+    var orientation = e.features[0].properties.orientation;
+
+    var dateStamp = e.features[0].properties.date;
+    var prettyDate = dateStamp.substr(0, 10)
+    var prettyTime = dateStamp.substr(11, 8)
+    var prettyDate = prettyDate.replace(/:/g, '/')
+    var newPrettyDate = Date.parse(prettyDate).toString('MMMM dS, yyyy')
+    var newPrettyTime = Date.parse(prettyTime).toString('HH:mm tt')
+
+    popup
+      .setLngLat(coordinates)
+      .setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
+      .addTo(myMap);
+  });
+
+  myMap.on('mouseleave', 'unclustered-point', function() {
+    myMap.getCanvas().style.cursor = '';
+    popup.remove();
   });
 
   // inspect a cluster on click
@@ -376,10 +435,7 @@ myMap.on('load', function () {
         zoom: zoom
       });
     });
-  
   });
-
-  
 
   myMap.on('mouseenter', 'clusters', function () {
     myMap.getCanvas().style.cursor = 'pointer';
@@ -390,4 +446,30 @@ myMap.on('load', function () {
   });
 });
 
+document.getElementById('fly').addEventListener('click', function () {
+  // Fly to a random location by offsetting the point -74.50, 40
+  // by up to 5 degrees.
+  b_rotate = false
+  // myMap.flyTo({
+  //   center: [
+  //     -0.09 + (Math.random() - 0.5) * 10,
+  //     51.505 + (Math.random() - 0.5) * 10]
+  // })
+  traverseMarkers()
+})
 
+document.getElementById('rotate').addEventListener('click', function () {
+  // toggle whether we are rotating the camera view or not
+  b_rotate = !b_rotate
+  rotateCamera(0)
+})
+
+function rotateCamera (timestamp) {
+  // clamp the rotation between 0 -360 degrees
+  // Divide timestamp by 100 to slow rotation to ~10 degrees / sec
+  if (b_rotate) {
+    myMap.rotateTo((timestamp / 100) % 360, { duration: 0 })
+  }
+  // Request the next frame of the animation.
+  requestAnimationFrame(rotateCamera)
+}
