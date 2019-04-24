@@ -1,7 +1,6 @@
 // global variables
 
 var maxSigns = 0 // number of sign-images to load
-// var myFileNames = []
 var myGeoData = []
 var mySigns = [] // array of sign-image names
 var myExif = [] // array of EXIF data for loaded sign-images
@@ -11,15 +10,13 @@ var currentMarker = 0
 var delayMilli = 14000 // delay between flyto marker animation events occurring
 var openMarkerDelay = 6000 // delay time on auto popup open and close
 var closeMarkerDelay = 13000 // delay time on auto popup open and close
-var flyAnimationLength = 0.6 // speed for flyto marker animation
+var flyAnimationLength = 0.7 // speed for flyto marker animation
 var flyMaxZoom = 18
 var b_rotate = false
 var markersList = [] // array of all markers added to clustering _layer
-// myFileNames = getImageFileNames();
 
 window.onload = function () {
   getImageGeoData()
-
   //  addSigns() // add all the signs to the map
 }
 
@@ -39,21 +36,6 @@ var myMap = new mapboxgl.Map({
   minZoom: 3,
   pitch: 60
 })
-
-// L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-//   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
-//   maxZoom: 20,
-//   minZoom: 3,
-//   // mapbox styling
-//   // id: 'mapbox.streets',
-//   id: 'mapbox.dark',
-//   style: 'mapbox://styles/danbz/cjulyma2a25c81foaf969uixn', // simple b&w
-
-//   // id: 'mapbox.light',
-//   // id: 'mapbox.outdoors',
-//   // id: 'mapbox.satellite',
-//   accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
-// }).addTo(myMap)
 
 // add info to the map
 // var info = L.control() // new leaflet map control layer
@@ -224,21 +206,6 @@ function loadExif (dataURL, url) {
       .addTo(myMap)
 
     popup.setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
-    // create new image-sign marker for map
-    // var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
-    // exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true)
-    // bind popup information to sign-image marker
-
-    // newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url +
-    //     "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
-
-    // newSign.on('mouseover', function (e) {
-    //   this.openPopup()
-    // })
-
-    // newSign.on('mouseout', function (e) {
-    //   // this.closePopup()
-    // })
 
     markersList.push(newSign)
     // markers.addLayer(newSign)
@@ -247,25 +214,6 @@ function loadExif (dataURL, url) {
   //  document.getElementById('signTotal').innerHTML = signsLoaded
   }
 }
-
-// // get geocode data
-// function httpGetAsync (theUrl, sign) {
-//   var xmlHttp = new XMLHttpRequest()
-//   xmlHttp.onreadystatechange = function () {
-//     if (xmlHttp.readyState === 4 && xmlHttp.status === 200) {
-//     // console.log(xmlHttp.responseText);
-//       var jsonText = xmlHttp.responseText
-//       myLocality = JSON.parse(jsonText)
-//       // console.log("parsed JSON " + myLocality.features[2].place_name);
-//       // locality = myLocality.features[2].place_name // mapbox reversegeo structure
-//       locality = myLocality.display_name // osm reversegeo structure
-//       var content = sign._popup._content
-//       sign._popup._content = content + locality + '</p></div>'
-//     }
-//   }
-//   xmlHttp.open('GET', theUrl, true) // true for asynchronous
-//   xmlHttp.send(null)
-// }
 
 function convertFileToBase64viaFileReader (url) {
   // convert filename to base64 dataURL Blob
@@ -365,8 +313,6 @@ myMap.on('load', function () {
       "circle-stroke-color": "#fff"
     }
   });
-
-
 
   myMap.on('click', 'unclustered-point', function (e) {   
     // create and populate a popup on click
