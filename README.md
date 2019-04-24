@@ -10,9 +10,9 @@ dependencies
  * leaflet.js library for mapping elements https://leafletjs.com
  * piexif.js for EXIF data extraction https://github.com/hMatoba/piexifjs
  * date.js for parsing of EXIF datetime data https://github.com/datejs
- * Javascript load image library https://github.com/blueimp/JavaScript-Load-Image
- * using reverse GeoCoding from nominatim.openstreetmap.org
+ * (Not currently using) Javascript load image library https://github.com/blueimp/JavaScript-Load-Image
+ * using precalculated geoJSON file for loactions, reverseGeoCoding performed via nominatim.openstreetmap.org
 
-* development-osm branch to switch from mapbox to openstreetmap for tile serving and reverse geo-coding
+* mapBox-refactor branch to move to using mapBox from leaflet js
 
 ![screenshot](screenshot.png)
