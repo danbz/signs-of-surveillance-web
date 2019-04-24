@@ -21,57 +21,70 @@ window.onload = function () {
   //  addSigns() // add all the signs to the map
 }
 
-var myMap = L.map('mapid').setView([51.505, -0.09], 5) // generate map gentred on LONDON
-// var myMap = L.map('mapid').setView([52.379, 4.899], 5); // generate map gentred on AMSTERDAM
-// var accessToken = "pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ"; // mapbox access token
+mapboxgl.accessToken = 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
+var myMap = new mapboxgl.Map({
+  container: 'mapid', // container id
+  // style: 'mapbox://styles/mapbox/streets-v11', // stylesheet location
+  // style: 'mapbox://styles/danbz/cjulwmvjm0iyd1fpcvgby6wif', // hybrid satellite
+  // style: 'mapbox://styles/danbz/cjttqd4zu179f1fqse7u8eudw', // old red and blue with 3d buildings
+  style: 'mapbox://styles/danbz/cjulyma2a25c81foaf969uixn', // simple b&w
+  // style: 'mapbox://styles/mapbox/satellite-v9',
+  // style: 'mapbox://styles/mapbox/dark-v10', //hosted style id
+  // style: 'mapbox://styles/mapbox/light-v10',
+  center: [ -0.09, 51.505 ], // starting position [lng, lat]
+  zoom: 18, // starting zoom
+  pitch: 60
+})
 
-L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
-  attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
-  maxZoom: 20,
-  minZoom: 3,
-  // mapbox styling
-  // id: 'mapbox.streets',
-  id: 'mapbox.dark',
-  // id: 'mapbox.light',
-  // id: 'mapbox.outdoors',
-  // id: 'mapbox.satellite',
-  accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
-}).addTo(myMap)
+// L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+//   attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Map Imagery © <a href="https://www.mapbox.com/">Mapbox</a>, all other materials  © <a href="https://www.buzzo.com/">Daniel Buzzo</a>',
+//   maxZoom: 20,
+//   minZoom: 3,
+//   // mapbox styling
+//   // id: 'mapbox.streets',
+//   id: 'mapbox.dark',
+//   style: 'mapbox://styles/danbz/cjulyma2a25c81foaf969uixn', // simple b&w
+
+//   // id: 'mapbox.light',
+//   // id: 'mapbox.outdoors',
+//   // id: 'mapbox.satellite',
+//   accessToken: 'pk.eyJ1IjoiZGFuYnoiLCJhIjoiY2p0cnN1bXcxMDQ5aTN5bXZ1YmNja2QxNCJ9.Uy4SmkElJKCMLsxy-P8CJQ'
+// }).addTo(myMap)
 
 // add info to the map
-var info = L.control() // new leaflet map control layer
-info.onAdd = function (myMap) {
-  this._div = L.DomUtil.create('div', 'info') // create a div with a class "info"
-  this.update()
-  return this._div
-}
+// var info = L.control() // new leaflet map control layer
+// info.onAdd = function (myMap) {
+//   this._div = L.DomUtil.create('div', 'info') // create a div with a class "info"
+//   this.update()
+//   return this._div
+// }
 
-info.update = function (props) { // populate info map control layer
-  // method that we will use to update the control based on feature properties passed
-  this._div.innerHTML =
-      "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of <span id='signMax'>0</span>. Viewing sign <span id='currentSign'>0</span><form><div class='toggles'><input type='checkbox' name='styled' id='styled' onclick='traverseMarkers()'><label for='styled'>Traverse Markers</label></div></form></p>"
-}
+// info.update = function (props) { // populate info map control layer
+//   // method that we will use to update the control based on feature properties passed
+//   this._div.innerHTML =
+//       "<h1 id='hero-title'>Signs of Surveillance</h1><h2 id='sub-title'>A photography project by <a href='http://www.buzzo.com'>Daniel Buzzo</a></h2><p id='loading-notice'><span id='signTotal'>0</span> signs loaded of <span id='signMax'>0</span>. Viewing sign <span id='currentSign'>0</span><form><div class='toggles'><input type='checkbox' name='styled' id='styled' onclick='traverseMarkers()'><label for='styled'>Traverse Markers</label></div></form></p>"
+// }
 
-info.addTo(myMap) // add info layer to map
+// info.addTo(myMap) // add info layer to map
 
-var markers = L.markerClusterGroup({
-  // make clustering group for markers
-  maxClusterRadius: 25,
-  spiderfyOnMaxZoom: false,
-  disableClusteringAtZoom: 16
-})
+// var markers = L.markerClusterGroup({
+//   // make clustering group for markers
+//   maxClusterRadius: 25,
+//   spiderfyOnMaxZoom: false,
+//   disableClusteringAtZoom: 16
+// })
 
 // to setup signs as custom icons in an array of markers
 function addSigns () {
   // maxSigns = myFileNames.length
   maxSigns = myGeoData.features.length
   console.log('maxsigns = ' + maxSigns)
-  document.getElementById('signMax').innerHTML = maxSigns
+ // document.getElementById('signMax').innerHTML = maxSigns
   for (i = 0; i < maxSigns; i++) {
     var imagePath = 'signs/' + myGeoData.features[i].properties.url
     convertFileToBase64viaFileReader(imagePath) // previous routine to load via piexif.js
   }
-  myMap.addLayer(markers) // add marker layer
+  // myMap.addLayer(markers) // add marker layer
 }
 
 function traverseMarkers () {
@@ -79,7 +92,7 @@ function traverseMarkers () {
   b_traversingMarkers = !b_traversingMarkers
   //  currentMarker = 0;
   //  document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
-  document.getElementById('currentSign').innerHTML = currentMarker
+ // document.getElementById('currentSign').innerHTML = currentMarker
   if (b_traversingMarkers) {
     interval = setInterval(incrementTraverse, delayMilli)
     incrementTraverse()
@@ -99,7 +112,7 @@ function incrementTraverse () {
   var lat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
   var long = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
     exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
-  document.getElementById('currentSign').innerHTML = currentMarker
+ // document.getElementById('currentSign').innerHTML = currentMarker
 
   // calculate distance to new latlong posiiton
   var distance = myMap.getCenter().distanceTo([lat, long]) // distance in meters
@@ -173,26 +186,39 @@ function loadExif (dataURL, url) {
       }
     }
 
+    var popup = new mapboxgl.Popup({ offset: 25 })
+    .setHTML("<h1>24th January 2019</h1><img src='signs/sign0.jpg' /><p>location</p>");
+
+    var newLat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
+    var newLong = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude], exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
+    var newSign = new mapboxgl.Marker({ draggable: false, color: '#000' })
+      .setLngLat([ newLong, newLat ])
+      .setPopup(popup) // sets a popup on this marker
+      .addTo(myMap)
+
+   console.log(' newsign ')
+     popup.setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
     // create new image-sign marker for map
-    var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
-      exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true)
+    // var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
+    // exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true)
     // bind popup information to sign-image marker
 
-    newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url +
-        "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
+    // newSign.bindPopup("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url +
+    //     "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
 
-    newSign.on('mouseover', function (e) {
-      this.openPopup()
-    })
+    // newSign.on('mouseover', function (e) {
+    //   this.openPopup()
+    // })
 
-    newSign.on('mouseout', function (e) {
-      // this.closePopup()
-    })
+    // newSign.on('mouseout', function (e) {
+    //   // this.closePopup()
+    // })
+
     markersList.push(newSign)
-    markers.addLayer(newSign)
+    // markers.addLayer(newSign)
     // var locality = httpGetAsync(geocodeDataUrl, newSign) // stop doing geocoding for the time being while moving to JSON file based
     signsLoaded += 1 // update number of signs loaded to map
-    document.getElementById('signTotal').innerHTML = signsLoaded
+  //  document.getElementById('signTotal').innerHTML = signsLoaded
   }
 }
 
