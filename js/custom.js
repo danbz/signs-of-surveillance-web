@@ -264,7 +264,7 @@ function getImageGeoData () {
     if (this.readyState === 4 && this.status === 200) {
       // console.log('returned server localities ' + this.responseText)
       myGeoData = JSON.parse(this.responseText)
-     // addSigns()
+      // addSigns()
     }
   }
   xmlhttp.open('GET', 'data/all-signs.geojson', true)
@@ -333,10 +333,34 @@ myMap.on('load', function () {
     filter: ["!", ["has", "point_count"]],
     paint: {
       "circle-color": "#11b4da",
-      "circle-radius": 4,
+      "circle-radius": 8,
       "circle-stroke-width": 1,
       "circle-stroke-color": "#fff"
     }
+  });
+
+  myMap.on('click', 'unclustered-point', function (e) {   
+    // create and populate a popup on click
+    var coordinates = e.features[0].geometry.coordinates.slice();
+    var locality = e.features[0].properties.locality;
+    var url = 'signs/' + e.features[0].properties.url;
+    var make = e.features[0].properties.make;
+    var model = e.features[0].properties.model;
+    var orientation = e.features[0].properties.orientation;
+
+    var dateStamp = e.features[0].properties.date;
+    var prettyDate = dateStamp.substr(0, 10)
+    var prettyTime = dateStamp.substr(11, 8)
+    var prettyDate = prettyDate.replace(/:/g, '/')
+    var newPrettyDate = Date.parse(prettyDate).toString('MMMM dS, yyyy')
+    var newPrettyTime = Date.parse(prettyTime).toString('HH:mm tt')
+
+    new mapboxgl.Popup()
+      .setLngLat(coordinates)
+      //.setHTML(description)
+      .setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
+      .addTo(myMap);
+
   });
 
   // inspect a cluster on click
@@ -352,7 +376,10 @@ myMap.on('load', function () {
         zoom: zoom
       });
     });
+  
   });
+
+  
 
   myMap.on('mouseenter', 'clusters', function () {
     myMap.getCanvas().style.cursor = 'pointer';
@@ -362,3 +389,5 @@ myMap.on('load', function () {
     myMap.getCanvas().style.cursor = '';
   });
 });
+
+
