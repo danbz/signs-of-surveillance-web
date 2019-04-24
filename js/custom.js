@@ -1,7 +1,7 @@
 // global variables
 
 var maxSigns = 0 // number of sign-images to load
-var myFileNames = []
+// var myFileNames = []
 var myGeoData = []
 var mySigns = [] // array of sign-image names
 var myExif = [] // array of EXIF data for loaded sign-images
@@ -33,6 +33,8 @@ var myMap = new mapboxgl.Map({
   // style: 'mapbox://styles/mapbox/light-v10',
   center: [ -0.09, 51.505 ], // starting position [lng, lat]
   zoom: 18, // starting zoom
+  maxZoom: 20,
+  minZoom: 3,
   pitch: 60
 })
 
@@ -79,7 +81,7 @@ function addSigns () {
   // maxSigns = myFileNames.length
   maxSigns = myGeoData.features.length
   console.log('maxsigns = ' + maxSigns)
- // document.getElementById('signMax').innerHTML = maxSigns
+  // document.getElementById('signMax').innerHTML = maxSigns
   for (i = 0; i < maxSigns; i++) {
     var imagePath = 'signs/' + myGeoData.features[i].properties.url
     convertFileToBase64viaFileReader(imagePath) // previous routine to load via piexif.js
@@ -92,7 +94,7 @@ function traverseMarkers () {
   b_traversingMarkers = !b_traversingMarkers
   //  currentMarker = 0;
   //  document.getElementById("traverseMarkers").innerHTML = b_traversingMarkers;
- // document.getElementById('currentSign').innerHTML = currentMarker
+  // document.getElementById('currentSign').innerHTML = currentMarker
   if (b_traversingMarkers) {
     interval = setInterval(incrementTraverse, delayMilli)
     incrementTraverse()
@@ -112,7 +114,7 @@ function incrementTraverse () {
   var lat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
   var long = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
     exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
- // document.getElementById('currentSign').innerHTML = currentMarker
+  // document.getElementById('currentSign').innerHTML = currentMarker
 
   // calculate distance to new latlong posiiton
   var distance = myMap.getCenter().distanceTo([lat, long]) // distance in meters
@@ -187,17 +189,16 @@ function loadExif (dataURL, url) {
     }
 
     var popup = new mapboxgl.Popup({ offset: 25 })
-    .setHTML("<h1>24th January 2019</h1><img src='signs/sign0.jpg' /><p>location</p>");
+      .setHTML("<h1>24th January 2019</h1><img src='signs/sign0.jpg' /><p>location</p>");
 
-    var newLat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
-    var newLong = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude], exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
+    // var newLat = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef])
+    // var newLong = piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude], exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])
     var newSign = new mapboxgl.Marker({ draggable: false, color: '#000' })
-      .setLngLat([ newLong, newLat ])
+      .setLngLat([ long, lat ])
       .setPopup(popup) // sets a popup on this marker
       .addTo(myMap)
 
-   console.log(' newsign ')
-     popup.setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
+    popup.setHTML("<div class ='sign_popup' ><h1>" + newPrettyDate + ', ' + newPrettyTime + "</h1><div class ='sign_popup_inner'><img class = 'orientation_" + orientation + "' src ='" + url + "'></div> <p>Recorded with " + make + ' ' + model + '.<p><p>' + locality + '</p></div>')
     // create new image-sign marker for map
     // var newSign = L.marker([piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLatitude], exif['GPS'][piexif.GPSIFD.GPSLatitudeRef]), piexif.GPSHelper.dmsRationalToDeg(exif['GPS'][piexif.GPSIFD.GPSLongitude],
     // exif['GPS'][piexif.GPSIFD.GPSLongitudeRef])], riseOnHover = true, autoclose = true)
@@ -256,21 +257,6 @@ function convertFileToBase64viaFileReader (url) {
   xhr.send()
 }
 
-// function getImageFileNames () {
-//   // request filenames of images from pre-built JSON file on server
-//   var xmlhttp = new XMLHttpRequest()
-//   xmlhttp.onreadystatechange = function () {
-//     if (this.readyState === 4 && this.status === 200) {
-//       console.log('returned server filenames ' + this.responseText)
-//       myFileNames = JSON.parse(this.responseText)
-//       getImageGeoData()
-//     }
-//   }
-//   // xmlhttp.open('GET', 'getNumofFiles.php', true)
-//   xmlhttp.open('GET', 'data/files.json', true)
-//   xmlhttp.send()
-// }
-
 function getImageGeoData () {
   // request geocode date of images from pre-built JSON file on server
   var xmlhttp = new XMLHttpRequest()
@@ -278,9 +264,101 @@ function getImageGeoData () {
     if (this.readyState === 4 && this.status === 200) {
       // console.log('returned server localities ' + this.responseText)
       myGeoData = JSON.parse(this.responseText)
-      addSigns()
+     // addSigns()
     }
   }
   xmlhttp.open('GET', 'data/all-signs.geojson', true)
   xmlhttp.send()
 }
+
+myMap.on('load', function () {
+  // Add a new source from our GeoJSON data and set the
+  // 'cluster' option to true. GL-JS will add the point_count property to your source data.
+  myMap.addSource('signs', {
+    type: 'geojson',
+    data: 'data/all-signs.geojson',
+    cluster: true,
+    clusterMaxZoom: 14, // Max zoom to cluster points on
+    clusterRadius: 50 // Radius of each cluster when clustering points (defaults to 50)
+  });
+
+  myMap.addLayer({
+    id: 'clusters',
+    type: 'circle',
+    source: 'signs',
+    filter: ['has', 'point_count'],
+    paint: {
+    // Use step expressions (https://docs.mapbox.com/mapbox-gl-js/style-spec/#expressions-step)
+    // with three steps to implement three types of circles:
+    //   * Blue, 20px circles when point count is less than 100
+    //   * Yellow, 30px circles when point count is between 100 and 750
+    //   * Pink, 40px circles when point count is greater than or equal to 750
+      'circle-color': [
+        'step',
+        ['get', 'point_count'],
+        '#51bbd6',
+        100,
+        '#f1f075',
+        750,
+        '#f28cb1'
+      ],
+      'circle-radius': [
+        'step',
+        ['get', 'point_count'],
+        20,
+        100,
+        30,
+        750,
+        40
+      ]
+    }
+  });
+
+  myMap.addLayer({
+    id: "cluster-count",
+    type: "symbol",
+    source: "signs",
+    filter: ["has", "point_count"],
+    layout: {
+      "text-field": "{point_count_abbreviated}",
+      "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+      "text-size": 12
+    }
+  });
+
+  myMap.addLayer({
+    id: "unclustered-point",
+    type: "circle",
+    source: "signs",
+    filter: ["!", ["has", "point_count"]],
+    paint: {
+      "circle-color": "#11b4da",
+      "circle-radius": 4,
+      "circle-stroke-width": 1,
+      "circle-stroke-color": "#fff"
+    }
+  });
+
+  // inspect a cluster on click
+  myMap.on('click', 'clusters', function (e) {
+    var features = myMap.queryRenderedFeatures(e.point, { layers: ['clusters'] });
+    var clusterId = features[0].properties.cluster_id;
+    myMap.getSource('signs').getClusterExpansionZoom(clusterId, function (err, zoom) {
+      if (err)
+        return;
+
+      myMap.easeTo({
+        center: features[0].geometry.coordinates,
+        zoom: zoom
+      });
+    });
+  });
+
+  myMap.on('mouseenter', 'clusters', function () {
+    myMap.getCanvas().style.cursor = 'pointer';
+  });
+
+  myMap.on('mouseleave', 'clusters', function () {
+    myMap.getCanvas().style.cursor = '';
+  });
+});
