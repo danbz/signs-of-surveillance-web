@@ -116,10 +116,11 @@ function incrementTraverse () {
     center: [lat, long], 
     zoom: flyMaxZoom, 
     // bearing: 90,
-    // pitch: 60,
+     pitch: 60,
     speed: flyAnimationLength,
     curve: 1
   })
+ 
   setTimeout(openPopupMarker, openMarkerDelay)
   setTimeout(removePopupMarker, closeMarkerDelay)
 }
@@ -153,6 +154,7 @@ function openPopupMarker () {
 
 function removePopupMarker () {
   popup.remove();
+  myMap.easeTo({pitch:0, speed: 0.9})
 }
 
 function loadExif (dataURL, url) {
