@@ -7,7 +7,7 @@ http://buzzo.com
 
 dependencies
 
- * leaflet.js library for mapping elements https://leafletjs.com
+ * mapbox-gl.js https://github.com/mapbox/mapbox-gl-js
  * piexif.js for EXIF data extraction https://github.com/hMatoba/piexifjs
  * date.js for parsing of EXIF datetime data https://github.com/datejs
  * (Not currently using) Javascript load image library https://github.com/blueimp/JavaScript-Load-Image
