@@ -13,6 +13,6 @@ dependencies
  * (Not currently using) Javascript load image library https://github.com/blueimp/JavaScript-Load-Image
  * using precalculated geoJSON file for loactions, reverseGeoCoding performed via nominatim.openstreetmap.org
 
-* mapBox-refactor branch to move to using mapBox from leaflet js
+* refactored to move to using mapBox from leaflet js
 
 ![screenshot](screenshot.png)
